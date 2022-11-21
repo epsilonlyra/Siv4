@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/amogus.dir/main.cpp.o CMakeFiles/amogus.dir/include/source/field_class.cpp.o -o amogus 
