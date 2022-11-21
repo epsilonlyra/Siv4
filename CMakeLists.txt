@@ -1,27 +1,30 @@
-cmake_minimum_required(VERSION 3.10)
+# I don't know how it works, just copy - pasted
+# All credit goes to  mister Dane Bulat
 
-project(SIV_4)
-set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-set(PROGRAM_SRCS
-    main.cpp
-    include/source/field_class.cpp
-    SFML/
-)
+# Set project name and version
+project(SIV4 VERSION 0.1)
 
-include_directories(
-    include/
-)
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-# Find version 2.5.0 of the SFML library on this computer,
-# but only use the graphics package
-# If the package can't be found, terminate the script
-find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+# Find SFML shared libraries
+find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)
+
+# Compile executable
+add_executable(SIV4 main.cpp include/source/field_class.cpp)
+
+# Set include directory search paths
+target_include_directories(SIV4
+  PRIVATE
+    "${PROJECT_BINARY_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  )
 
 
-# Add the following SFML module to the application:
-target_link_libraries(sfml-graphics)
-
-
-add_executable(amogus ${PROGRAM_SRCS})
+# Link executable to required SFML modules
+target_link_libraries(SIV4 sfml-graphics sfml-audio)
 

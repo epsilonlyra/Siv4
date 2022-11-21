@@ -5,7 +5,8 @@
 #include <cmath>
 
 
-namespace field {
+
+
     const int N = 100;
 
     struct base_exception {
@@ -80,6 +81,6 @@ namespace field {
             void evolve(double dt);
     };
 
-}
+
 
 #endif

@@ -1,3 +1,0 @@
-/home/epsilon/Siv4/build/CMakeFiles/amogus.dir
-/home/epsilon/Siv4/build/CMakeFiles/edit_cache.dir
-/home/epsilon/Siv4/build/CMakeFiles/rebuild_cache.dir
