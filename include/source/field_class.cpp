@@ -1,5 +1,6 @@
 #include "field_class.hpp"
 
+using namespace fc;
 
 std::string out_of_boundary_change ::  what() { return std::string("Impossible to change an element out of boundaries\n"); }
 

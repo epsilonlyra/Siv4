@@ -7,7 +7,7 @@
 
 
 
-    const int N = 100;
+
 
     struct base_exception {
         std :: string virtual what() = 0;
@@ -29,6 +29,8 @@
     };
 
 
+namespace fc  {
+    const int N = 200;
 
     class Grid {
         private:
@@ -71,16 +73,18 @@
             Grid dot_phi_grid;
             const Grid c;
 
+
+
+        public:
             double phi(int x, int y) const;
 
             double dot_phi(int x, int y) const;
 
-        public:
             Scalar_Field(Grid init_phi, Grid init_dot_phi);
 
             void evolve(double dt);
     };
 
-
+}
 
 #endif
