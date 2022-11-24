@@ -17,6 +17,14 @@
         std::string what() override;
     };
 
+
+
+
+namespace fc  {
+    const int N = 200;
+
+
+
     class Point {
         private:
             double x;
@@ -27,10 +35,6 @@
 
             double distance(const Point& other) const;
     };
-
-
-namespace fc  {
-    const int N = 200;
 
     class Grid {
         private:

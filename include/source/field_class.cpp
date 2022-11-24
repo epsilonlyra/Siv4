@@ -109,7 +109,8 @@ Scalar_Field :: Scalar_Field(Grid init_phi, Grid init_dot_phi) : phi_grid(init_p
 
 void  Scalar_Field  :: evolve(double dt) {
     phi_grid += dot_phi_grid*(dt);
-    dot_phi_grid += ((phi_grid.partial_x()).partial_x() + (phi_grid.partial_y()).partial_y())* dt;
+    dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
+    dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
 }
 
 

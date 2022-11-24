@@ -7,16 +7,18 @@ void update_Image(fc :: Scalar_Field& scalar, sf :: Image& image) {
         for (int j = 0; j < fc ::  N; j++) {
 
             if (scalar.phi(i, j) > 0) {
-                sf :: Color color(250 * scalar.phi(i, j), 0, 0);
+                sf :: Color color( scalar.phi(i, j) * 255, 0, 0);
                 image.setPixel(i, j, color);
             }
             else {
-                image.setPixel(i, j, sf :: Color :: Black);
+                sf :: Color color(0, 0, -scalar.phi(i, j) * 255);
+                image.setPixel(i, j, color);
             }
 
         }
     }
 }
+
 const int FPS  = 30;
 
 int main() {
@@ -25,9 +27,9 @@ int main() {
     fc :: Grid grid;
     fc :: Grid grid2;
 
-    for (int i = 0; i < 10; i++) {
-             for (int j = 0; j < 10; j++){
-                 grid.change_val(10 + i, 10 + j, 1);
+    for (int i = 0; i < 50; i++) {
+             for (int j = 0; j < 50; j++){
+                 grid.change_val(75 + i, 75 + j, 1);
              }
     }
 
@@ -36,7 +38,8 @@ int main() {
 
 
     sf::RenderWindow window(sf::VideoMode(fc :: N, fc :: N), "SIV4");
-    window.setFramerateLimit(30);
+
+    window.setFramerateLimit(FPS);
 
 
     sf :: Image image;
@@ -47,9 +50,7 @@ int main() {
 
 
     sf :: Texture texture;
-
     texture.create(fc :: N, fc :: N);
-
     texture.update(image);
 
     sf :: Sprite sprite;
@@ -59,33 +60,51 @@ int main() {
     sf::Time previousTime = clock.getElapsedTime();
     sf::Time currentTime;
 
+    int slow_counter = 0;
 
     while (window.isOpen())
     {
+        currentTime = clock.getElapsedTime();
 
         sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
+        while (window.pollEvent(event)) {
+
+            if (event.type == sf::Event::Closed) {
                 window.close();
+            }
+
+            if (event.type == sf::Event::KeyPressed) {
+
+                if (event.key.code == sf::Keyboard::Return) {
+                    window.close();
+                }
+            }
         }
 
 
         window.clear(sf::Color::Black);
 
         window.draw(sprite);
-        update_Image(scalar, image);
-        scalar.evolve(1);
-        texture.update(image);
 
+        update_Image(scalar, image);
+
+        texture.update(image);
 
         window.display();
 
+        scalar.evolve(1);
+
         currentTime = clock.getElapsedTime();
         float fps = 1.0f / (currentTime.asSeconds() - previousTime.asSeconds());
-        std::cout << "fps =" << floor(fps) << std::endl;
+        if (fps <= 27) {
+            slow_counter++;
+        }
         previousTime = currentTime;
+
+
     }
+    std :: cout <<  "slow_frames " << slow_counter << '\n';
+    std :: cout << "time_elapsed " <<  floor( currentTime.asSeconds()) << '\n';
 
 
     return 0;
