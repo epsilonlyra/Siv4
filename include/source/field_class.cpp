@@ -4,15 +4,8 @@ using namespace fc;
 
 std::string out_of_boundary_change ::  what() { return std::string("Impossible to change an element out of boundaries\n"); }
 
-
-
-Point  :: Point( double x, double y): x(x), y(y) {}
-
-double Point :: distance(const Point& other) const {
-    return std::sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
-}
-
-
+//---------------------------------------------------------------------
+// Grid methods
 
 Grid :: Grid() : ptr(new double* [N]) {
     // intitializes Grid filled with zeros
@@ -35,22 +28,12 @@ void  Grid :: change_val(int x, int y, double new_value) {
     ptr[x][y] = new_value;
 }
 
-Grid  Grid :: partial_x() {
-    Grid temp;
+Grid& Grid :: operator*=(const double t) {
     for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) {
-            temp.change_val(x, y, (val(x + 1, y) - val(x - 1, y)) / 2);
+            ptr[x][y] *= t;
         }
-    return temp;
-}
-
-Grid Grid ::  partial_y() {
-    Grid temp;
-    for (int x = 0; x < N; x++)
-        for (int y = 0; y < N; y++) {
-            temp.change_val(x, y, (val(x, y + 1) - val(x, y - 1)) / 2);
-        }
-    return temp;
+    return *this;
 }
 
 Grid&  Grid :: operator+=(const Grid& other) {
@@ -61,38 +44,19 @@ Grid&  Grid :: operator+=(const Grid& other) {
     return *this;
 }
 
-Grid Grid :: operator+(const Grid& other) {
-    Grid temp(*this);
-    temp += other;
-    return *this;
-}
-
-Grid& Grid ::  operator*(double alpha) {
+void Grid :: increment(const Grid& other, double dt) {
     for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) {
-            ptr[x][y] *= alpha;
-        }
-    return *this;
-}
-
-// rule of five ???
-// destructor (1/5)
-Grid :: ~Grid() {
-    for (int x = 0; x < N; x++) {
-        delete[] ptr[x];
-    }
-    delete[] ptr;
-}
-
-// copy constructor (2/5)
-Grid :: Grid(const Grid& other) : Grid() {
-    for (int x = 0; x < N; x++)
-        for (int y = 0; y < N; y++) {
-            ptr[x][y] = other.ptr[x][y];
+            ptr[x][y] += other.ptr[x][y] * dt;
         }
 }
 
 
+
+
+
+//---------------------------------------------------------------------
+// Scalar Field methods
 double Scalar_Field ::  phi(int x, int y) const {
     return phi_grid.val(x, y);
 }
@@ -104,10 +68,48 @@ double Scalar_Field ::  dot_phi(int x, int y) const {
 
 Scalar_Field :: Scalar_Field(Grid init_phi, Grid init_dot_phi) : phi_grid(init_phi), dot_phi_grid(init_dot_phi) {}
 
+void Scalar_Field :: get_phi_xx() {
+    for (int x = 0; x < N; x++)
+        for (int y = 0; y < N; y++) {
+            phi_xx.change_val(x, y, phi_grid.val(x-1, y) - 2 * phi_grid.val(x,y) + phi_grid.val(x+1,y));
+        }
+}
+
+void Scalar_Field :: get_phi_yy() {
+    for (int x = 0; x < N; x++)
+        for (int y = 0; y < N; y++) {
+            phi_yy.change_val(x, y, phi_grid.val(x, y-1) - 2 * phi_grid.val(x,y) + phi_grid.val(x,y+1));
+        }
+}
+
+void Scalar_Field :: apply_borders() {
+    // sets phi=0 and dot_phi=0 near borders
+    for (int x = 0; x < N; x++) {
+        phi_grid.change_val(0, x, 0);
+        phi_grid.change_val(N-1, x, 0);
+        phi_grid.change_val(x, 0, 0);
+        phi_grid.change_val(x, N-1, 0);
+
+        dot_phi_grid.change_val(0, x, 0);
+        dot_phi_grid.change_val(N-1, x, 0);
+        dot_phi_grid.change_val(x, 0, 0);
+        dot_phi_grid.change_val(x, N-1, 0);
+    }
+}
+
 void  Scalar_Field  :: evolve(double dt) {
-    phi_grid += dot_phi_grid*(dt);
-    dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
-    dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
+    // calculating derivatives
+    get_phi_xx();
+    get_phi_yy();
+    
+    // boundary conditions
+    apply_borders();
+
+    // incremetning the values
+    // assuming c = 1 (need to fix in the future)
+    phi_grid.increment(dot_phi_grid, dt);
+    dot_phi_grid.increment(phi_xx, dt);
+    dot_phi_grid.increment(phi_yy, dt);
 }
 
 void Scalar_Field :: update_phi(int x, int y, int side, int amplitude) {

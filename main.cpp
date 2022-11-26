@@ -90,7 +90,7 @@ int main() {
 
         window.display();
 
-        scalar.evolve(1);
+        scalar.evolve(0.2);
 
         currentTime = clock.getElapsedTime();
         float fps = 1.0f / (currentTime.asSeconds() - previousTime.asSeconds());
