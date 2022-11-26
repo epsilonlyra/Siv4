@@ -6,10 +6,6 @@
 #include<memory>
 
 
-
-
-
-
     struct base_exception {
         std :: string virtual what() = 0;
     };
@@ -23,7 +19,7 @@
 
 namespace fc  {
 
-    const int N = 200;
+    const int N = 300;
 
     class Grid {
         private:
@@ -52,6 +48,8 @@ namespace fc  {
             Grid operator+(const Grid& other);
 
             Grid& operator*(double alpha);
+
+
 
             // destructor (1/5)
 
@@ -82,9 +80,11 @@ namespace fc  {
 
             Scalar_Field();
 
-            void create_disturbance (int x, int y, int side, int amplitude);
+            void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
             void evolve(double dt);
+
+
     };
 
 }

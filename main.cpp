@@ -19,8 +19,6 @@ void update_Image(fc :: Scalar_Field& scalar, sf :: Image& image) {
     }
 }
 
-
-
 const int FPS  = 30;
 
 int main() {
@@ -28,7 +26,7 @@ int main() {
 
     fc :: Scalar_Field scalar;
 
-    scalar.create_disturbance((fc :: N) / 2 , (fc:: N) / 2, 50, 1);
+    scalar.create_disturbance((fc :: N) / 2 , (fc:: N) / 2,  10, 100, 1);
 
     sf::RenderWindow window(sf::VideoMode(fc :: N, fc :: N), "SIV4");
 
@@ -48,6 +46,18 @@ int main() {
 
     sf :: Sprite sprite;
     sprite.setTexture(texture);
+
+    sf::Vertex line1 [] =
+    {
+    sf::Vertex(sf::Vector2f(78, 0)),
+    sf::Vertex(sf::Vector2f(78, fc :: N  / 2 - 5 ))
+    };
+
+    sf::Vertex line2 [] =
+    {
+    sf::Vertex(sf::Vector2f(78, fc :: N / 2 + 5 )),
+    sf::Vertex(sf::Vector2f(78, fc :: N ))
+    };
 
     sf::Clock clock;
     sf::Time previousTime = clock.getElapsedTime();
@@ -76,7 +86,7 @@ int main() {
 
             if (event.type = sf :: Event :: MouseButtonPressed) {
 
-                scalar.create_disturbance(event.mouseButton.x, event.mouseButton.y,  50, 1);
+                scalar.create_disturbance(event.mouseButton.x, event.mouseButton.y,  50, 50,  1);
             }
         }
 
@@ -84,6 +94,9 @@ int main() {
         window.clear(sf::Color::Black);
 
         window.draw(sprite);
+
+        window.draw(line1, 2, sf :: Lines);
+        window.draw(line2, 2, sf :: Lines);
 
         update_Image(scalar, image);
 

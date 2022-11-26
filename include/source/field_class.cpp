@@ -19,8 +19,8 @@ Grid :: Grid() : ptr(std :: make_unique< std ::  unique_ptr<double []>[] >(N)) {
 
 double Grid ::  val(int x, int y) const {
     // returns value at x,y if x,y are in boundaries; returns 0 otherwise
-    if ((x < 0) || (x >= N)) return 0;
-    if ((y < 0) || (y >= N)) return 0;
+    if ((x < 0) || (x >= N)) return -10;
+    if ((y < 0) || (y >= N)) return -10;
     return ptr[x][y];
 }
 
@@ -28,7 +28,13 @@ void  Grid :: change_val(int x, int y, double new_value) {
     // changes value at xy, if x,y are in boundaries; throws an error otherwise
     if ((x < 0) || (x >= N)) throw out_of_boundary_change();
     if ((y < 0) || (y >= N)) throw out_of_boundary_change();
+
+    if ((x <= 0) || (x >= N - 1)) return ;
+    if ((y <= 0) || (y >= N - 1)) return ;
+    if (x == 78 && ((y <= (fc :: N) / 2 - 5 )|| (y >= (fc :: N ) / 2 + 5 ))) return;
+
     ptr[x][y] = new_value;
+
 }
 
 Grid  Grid :: partial_x() {
@@ -37,6 +43,7 @@ Grid  Grid :: partial_x() {
         for (int y = 0; y < N; y++) {
             temp.change_val(x, y, (val(x + 1, y) - val(x - 1, y)) / 2);
         }
+
     return temp;
 }
 
@@ -46,6 +53,7 @@ Grid Grid ::  partial_y() {
         for (int y = 0; y < N; y++) {
             temp.change_val(x, y, (val(x, y + 1) - val(x, y - 1)) / 2);
         }
+
     return temp;
 }
 
@@ -54,12 +62,14 @@ Grid&  Grid :: operator+=(const Grid& other) {
         for (int y = 0; y < N; y++) {
             ptr[x][y] += other.ptr[x][y];
         }
+
     return *this;
 }
 
 Grid Grid :: operator+(const Grid& other) {
     Grid temp(*this);
     temp += other;
+
     return *this;
 }
 
@@ -68,6 +78,7 @@ Grid& Grid ::  operator*(double alpha) {
         for (int y = 0; y < N; y++) {
             ptr[x][y] *= alpha;
         }
+
     return *this;
 }
 
@@ -79,6 +90,7 @@ Grid :: Grid(const Grid& other) : Grid() {
             ptr[x][y] = other.ptr[x][y];
         }
 }
+
 
 
 //---------------------------------------------------------------------
@@ -98,22 +110,26 @@ Scalar_Field :: Scalar_Field(Grid init_phi, Grid init_dot_phi) : phi_grid(init_p
 Scalar_Field :: Scalar_Field() : Scalar_Field :: Scalar_Field( Grid(), Grid()) {}
 
 void  Scalar_Field  :: evolve(double dt) {
+
     phi_grid += dot_phi_grid*(dt);
+
     dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
     dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
 }
 
-void Scalar_Field :: create_disturbance (int x, int y, int side, int amplitude) {
-     for (int i = 0; i < side; i++) {
-             for (int j = 0; j < side; j++) {
+void Scalar_Field :: create_disturbance (int x, int y, int width, int length,  int amplitude) {
+     for (int i = 0; i < width; i++) {
+             for (int j = 0; j < length; j++) {
                  try {
-                    phi_grid.change_val(x - side / 2 + i, y - side /2 +  j, amplitude);
+                    phi_grid.change_val(x - width/ 2 + i, y - length /2 +  j, amplitude);
                  }
 
                  catch (const out_of_boundary_change& error) {}
              }
     }
 }
+
+
 
 
 
