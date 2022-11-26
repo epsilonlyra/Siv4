@@ -1,4 +1,5 @@
 #include "field_class.hpp"
+#include<memory>
 
 using namespace fc;
 
@@ -6,17 +7,12 @@ std::string out_of_boundary_change ::  what() { return std::string("Impossible t
 
 
 
-Point  :: Point( double x, double y): x(x), y(y) {}
+//---------------------------------------------------------------------
+// Grid methods
 
-double Point :: distance(const Point& other) const {
-    return std::sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
-}
-
-
-
-Grid :: Grid() : ptr(new double* [N]) {
+Grid :: Grid() : ptr(std :: make_unique< std ::  unique_ptr<double []>[] >(N)) {
     // intitializes Grid filled with zeros
-    for (int i = 0; i < N; i++) ptr[i] = new double[N];
+    for (int i = 0; i < N; i++) ptr[i] = std :: make_unique<double []>(N);
     for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) ptr[x][y] = 0;
 }
@@ -75,16 +71,8 @@ Grid& Grid ::  operator*(double alpha) {
     return *this;
 }
 
-// rule of five ???
-// destructor (1/5)
-Grid :: ~Grid() {
-    for (int x = 0; x < N; x++) {
-        delete[] ptr[x];
-    }
-    delete[] ptr;
-}
+Grid :: ~Grid() = default;
 
-// copy constructor (2/5)
 Grid :: Grid(const Grid& other) : Grid() {
     for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) {
@@ -92,6 +80,9 @@ Grid :: Grid(const Grid& other) : Grid() {
         }
 }
 
+
+//---------------------------------------------------------------------
+// Scalar Field methods
 
 double Scalar_Field ::  phi(int x, int y) const {
     return phi_grid.val(x, y);
@@ -104,13 +95,15 @@ double Scalar_Field ::  dot_phi(int x, int y) const {
 
 Scalar_Field :: Scalar_Field(Grid init_phi, Grid init_dot_phi) : phi_grid(init_phi), dot_phi_grid(init_dot_phi) {}
 
+Scalar_Field :: Scalar_Field() : Scalar_Field :: Scalar_Field( Grid(), Grid()) {}
+
 void  Scalar_Field  :: evolve(double dt) {
     phi_grid += dot_phi_grid*(dt);
     dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
     dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
 }
 
-void Scalar_Field :: update_phi(int x, int y, int side, int amplitude) {
+void Scalar_Field :: create_disturbance (int x, int y, int side, int amplitude) {
      for (int i = 0; i < side; i++) {
              for (int j = 0; j < side; j++) {
                  try {

@@ -7,9 +7,11 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(SIV4 VERSION 0.1)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_STANDARD 14)
+
+
+set(CMAKE_CXX_FLAGS "-O3")
+
 
 # Find SFML shared libraries
 find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)

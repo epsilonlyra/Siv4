@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include <cmath>
+#include<memory>
 
 
 
@@ -21,24 +22,13 @@
 
 
 namespace fc  {
-    const int N = 500;
 
-
-
-    class Point {
-        private:
-            double x;
-            double y;
-
-        public:
-            Point(double x, double y);
-
-            double distance(const Point& other) const;
-    };
+    const int N = 200;
 
     class Grid {
         private:
-            double** ptr;
+
+            std :: unique_ptr <std :: unique_ptr <double []> []> ptr;
 
         public:
             Grid();
@@ -63,12 +53,16 @@ namespace fc  {
 
             Grid& operator*(double alpha);
 
-            // rule of five ???
             // destructor (1/5)
+
             ~Grid();
 
-            // copy constructor (2/5)
+            // copy_constructor (2/5)
             Grid(const Grid& other);
+
+
+
+
     };
 
     class Scalar_Field {
@@ -86,7 +80,9 @@ namespace fc  {
 
             Scalar_Field(Grid init_phi, Grid init_dot_phi);
 
-            void update_phi(int x, int y, int side, int amplitude);
+            Scalar_Field();
+
+            void create_disturbance (int x, int y, int side, int amplitude);
 
             void evolve(double dt);
     };

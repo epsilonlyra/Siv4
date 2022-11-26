@@ -26,14 +26,9 @@ const int FPS  = 30;
 int main() {
 
 
-    fc :: Grid grid;
-    fc :: Grid grid2;
+    fc :: Scalar_Field scalar;
 
-
-
-    fc :: Scalar_Field scalar (grid, grid2);
-
-    scalar.update_phi(100, 100, 90, 10);
+    scalar.create_disturbance((fc :: N) / 2 , (fc:: N) / 2, 50, 1);
 
     sf::RenderWindow window(sf::VideoMode(fc :: N, fc :: N), "SIV4");
 
@@ -76,6 +71,12 @@ int main() {
                 if (event.key.code == sf::Keyboard::Return) {
                     window.close();
                 }
+            }
+
+
+            if (event.type = sf :: Event :: MouseButtonPressed) {
+
+                scalar.create_disturbance(event.mouseButton.x, event.mouseButton.y,  50, 1);
             }
         }
 
