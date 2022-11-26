@@ -5,19 +5,36 @@
 #include <cmath>
 
 
-struct base_exception {
-    std :: string virtual what() = 0;
-};
 
-struct out_of_boundary_change final : base_exception {
-    std::string what() override;
-};
+
+
+
+    struct base_exception {
+        std :: string virtual what() = 0;
+    };
+
+    struct out_of_boundary_change final : base_exception {
+        std::string what() override;
+    };
+
 
 
 
 namespace fc  {
     const int N = 500;
 
+
+
+    class Point {
+        private:
+            double x;
+            double y;
+
+        public:
+            Point(double x, double y);
+
+            double distance(const Point& other) const;
+    };
 
     class Grid {
         private:
@@ -35,25 +52,32 @@ namespace fc  {
             void change_val(int x, int y, double new_value);
                 // changes value at xy, if x,y are in boundaries; throws an error otherwise
 
-            Grid& operator*=(const double t);
+
+            Grid partial_x();
+
+            Grid partial_y();
 
             Grid& operator+=(const Grid& other);
 
-            void increment(const Grid& other, double dt);
+            Grid operator+(const Grid& other);
+
+            Grid& operator*(double alpha);
+
+            // rule of five ???
+            // destructor (1/5)
+            ~Grid();
+
+            // copy constructor (2/5)
+            Grid(const Grid& other);
     };
 
     class Scalar_Field {
         private:
             Grid phi_grid;
             Grid dot_phi_grid;
-            Grid phi_xx;
-            Grid phi_yy;
             const Grid c;
 
-            void get_phi_xx();
-            void get_phi_yy();
 
-            void apply_borders();
 
         public:
             double phi(int x, int y) const;
