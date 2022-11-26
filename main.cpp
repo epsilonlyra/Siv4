@@ -19,6 +19,8 @@ void update_Image(fc :: Scalar_Field& scalar, sf :: Image& image) {
     }
 }
 
+
+
 const int FPS  = 30;
 
 int main() {
@@ -27,15 +29,11 @@ int main() {
     fc :: Grid grid;
     fc :: Grid grid2;
 
-    for (int i = 0; i < 50; i++) {
-             for (int j = 0; j < 50; j++){
-                 grid.change_val(75 + i, 75 + j, 1);
-             }
-    }
 
 
-    fc :: Scalar_Field scalar (grid,grid2);
+    fc :: Scalar_Field scalar (grid, grid2);
 
+    scalar.update_phi(100, 100, 90, 10);
 
     sf::RenderWindow window(sf::VideoMode(fc :: N, fc :: N), "SIV4");
 
@@ -104,7 +102,7 @@ int main() {
 
     }
     std :: cout <<  "slow_frames " << slow_counter << '\n';
-    std :: cout << "time_elapsed " <<  floor( currentTime.asSeconds()) << '\n';
+    std :: cout << "time_elapsed " <<  floor(currentTime.asSeconds()) << '\n';
 
 
     return 0;

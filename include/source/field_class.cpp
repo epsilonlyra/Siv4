@@ -93,9 +93,6 @@ Grid :: Grid(const Grid& other) : Grid() {
 }
 
 
-
-
-
 double Scalar_Field ::  phi(int x, int y) const {
     return phi_grid.val(x, y);
 }
@@ -111,6 +108,18 @@ void  Scalar_Field  :: evolve(double dt) {
     phi_grid += dot_phi_grid*(dt);
     dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
     dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
+}
+
+void Scalar_Field :: update_phi(int x, int y, int side, int amplitude) {
+     for (int i = 0; i < side; i++) {
+             for (int j = 0; j < side; j++) {
+                 try {
+                    phi_grid.change_val(x - side / 2 + i, y - side /2 +  j, amplitude);
+                 }
+
+                 catch (const out_of_boundary_change& error) {}
+             }
+    }
 }
 
 

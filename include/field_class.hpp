@@ -21,7 +21,7 @@
 
 
 namespace fc  {
-    const int N = 200;
+    const int N = 500;
 
 
 
@@ -85,6 +85,8 @@ namespace fc  {
             double dot_phi(int x, int y) const;
 
             Scalar_Field(Grid init_phi, Grid init_dot_phi);
+
+            void update_phi(int x, int y, int side, int amplitude);
 
             void evolve(double dt);
     };
