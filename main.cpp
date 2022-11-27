@@ -26,7 +26,7 @@ int main() {
 
     fc :: Scalar_Field scalar;
 
-    scalar.create_disturbance((fc :: N) / 2 , (fc:: N) / 2,  10, 100, 1);
+    scalar.create_disturbance((fc :: N) / 2 , (fc:: N) / 2,  10, 100, 5);
 
     sf::RenderWindow window(sf::VideoMode(fc :: N, fc :: N), "SIV4");
 
@@ -105,6 +105,7 @@ int main() {
         window.display();
 
         scalar.evolve(1);
+
 
         currentTime = clock.getElapsedTime();
         float fps = 1.0f / (currentTime.asSeconds() - previousTime.asSeconds());

@@ -19,8 +19,8 @@ Grid :: Grid() : ptr(std :: make_unique< std ::  unique_ptr<double []>[] >(N)) {
 
 double Grid ::  val(int x, int y) const {
     // returns value at x,y if x,y are in boundaries; returns 0 otherwise
-    if ((x < 0) || (x >= N)) return -10;
-    if ((y < 0) || (y >= N)) return -10;
+    if ((x < 0) || (x >= N)) return 0;
+    if ((y < 0) || (y >= N)) return 0;
     return ptr[x][y];
 }
 
@@ -29,17 +29,15 @@ void  Grid :: change_val(int x, int y, double new_value) {
     if ((x < 0) || (x >= N)) throw out_of_boundary_change();
     if ((y < 0) || (y >= N)) throw out_of_boundary_change();
 
-    if ((x <= 0) || (x >= N - 1)) return ;
-    if ((y <= 0) || (y >= N - 1)) return ;
-    if (x == 78 && ((y <= (fc :: N) / 2 - 5 )|| (y >= (fc :: N ) / 2 + 5 ))) return;
-
     ptr[x][y] = new_value;
 
 }
 
+
+
 Grid  Grid :: partial_x() {
-    Grid temp;
-    for (int x = 0; x < N; x++)
+    Grid temp = Grid();
+    for (int x = 1; x < N - 1; x++)
         for (int y = 0; y < N; y++) {
             temp.change_val(x, y, (val(x + 1, y) - val(x - 1, y)) / 2);
         }
@@ -50,7 +48,7 @@ Grid  Grid :: partial_x() {
 Grid Grid ::  partial_y() {
     Grid temp;
     for (int x = 0; x < N; x++)
-        for (int y = 0; y < N; y++) {
+        for (int y = 1; y < N - 1; y++) {
             temp.change_val(x, y, (val(x, y + 1) - val(x, y - 1)) / 2);
         }
 
@@ -91,8 +89,6 @@ Grid :: Grid(const Grid& other) : Grid() {
         }
 }
 
-
-
 //---------------------------------------------------------------------
 // Scalar Field methods
 
@@ -113,8 +109,13 @@ void  Scalar_Field  :: evolve(double dt) {
 
     phi_grid += dot_phi_grid*(dt);
 
+
+
     dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
+
     dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
+
+    apply_boundaries();
 }
 
 void Scalar_Field :: create_disturbance (int x, int y, int width, int length,  int amplitude) {
@@ -128,6 +129,31 @@ void Scalar_Field :: create_disturbance (int x, int y, int width, int length,  i
              }
     }
 }
+
+
+void  Scalar_Field :: apply_boundaries() {
+    for (int x = 0; x < N; x++) {
+        for (int y = 0; y < N; y++) {
+            if ((x == 0) || (x == N - 10)) phi_grid.change_val(x, y, 0);
+            if ((y == 0) || (y == N - 10)) phi_grid.change_val(x, y, 0);
+            if (x == 76 && ((y <= (fc :: N) / 2 - 5 )|| (y >= (fc :: N ) / 2 + 5 ))) phi_grid.change_val(x, y, 0);
+
+
+
+            if ((x ==  0) || (x == N)) dot_phi_grid.change_val(x, y, 0);
+            if ((y == 0) || (y == N)) dot_phi_grid.change_val(x, y, 0);
+
+            // for some reason this hase to be at least two pixels in width
+            if (x == 77 && ((y <= (fc :: N) / 2 - 5 )|| (y >= (fc :: N ) / 2 + 5 ))) dot_phi_grid.change_val(x, y, 0);
+            if (x == 76 && ((y <= (fc :: N) / 2 - 5 )|| (y >= (fc :: N ) / 2 + 5 ))) dot_phi_grid.change_val(x, y, 0);
+        }
+    }
+
+}
+
+
+
+
 
 
 

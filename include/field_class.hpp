@@ -6,6 +6,7 @@
 #include<memory>
 
 
+
     struct base_exception {
         std :: string virtual what() = 0;
     };
@@ -50,7 +51,6 @@ namespace fc  {
             Grid& operator*(double alpha);
 
 
-
             // destructor (1/5)
 
             ~Grid();
@@ -71,6 +71,7 @@ namespace fc  {
 
 
 
+
         public:
             double phi(int x, int y) const;
 
@@ -83,6 +84,8 @@ namespace fc  {
             void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
             void evolve(double dt);
+
+            void apply_boundaries();
 
 
     };
