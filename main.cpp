@@ -1,11 +1,14 @@
+
 #include "field_class.hpp"
 #include <SFML/Graphics.hpp>
 #include <map>
 #include<string>
-void update_Image(fc :: Scalar_Field& scalar, sf :: Image& image) {
 
-    for (int i = 0; i < fc ::  N; i++) {
-        for (int j = 0; j < fc ::  N; j++) {
+template<int N>
+void update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
 
             if (scalar.phi(i, j) > 0) {
                 sf :: Color color( scalar.phi(i, j) * 255, 0, 0);
@@ -21,20 +24,21 @@ void update_Image(fc :: Scalar_Field& scalar, sf :: Image& image) {
 }
 
 
-class Game_manager {
+class SimulationManager {
 
     public  :
 
+        int const  static size = 300;
 
-        Game_manager() {
-            texture.create(fc :: N, fc :: N);
+        SimulationManager() {
+            texture.create(size, size);
             sprite.setTexture(texture);
-            image.create(fc :: N, fc :: N, sf :: Color ::  Red);
+            image.create(size, size, sf :: Color ::  Red);
         }
 
         const  static int FPS = 30;
 
-        const static int BAD_FPS = 27;
+
 
         void pause() {
             game_state["paused"] = !game_state["paused"];
@@ -65,49 +69,81 @@ class Game_manager {
         std :: map<std :: string, bool> game_state {{"paused", false}};
 
 
-        fc :: Scalar_Field scalar;
+        fc :: Scalar_Field<size> scalar;
 
         sf :: Image image;
 
         sf :: Texture texture;
 
         sf :: Sprite sprite;
+};
 
+class TimeManager  {
+
+    public:
+         const static int BAD_FPS = 27;
+
+    int count_fps() {
+
+        currentTime = clock.getElapsedTime();
+
+        int  fps =  floor(1.0f / (currentTime.asSeconds() - previousTime.asSeconds()));
+        if (fps <= BAD_FPS) {
+            slow_counter++;
+        }
+        previousTime = currentTime;
+        return fps;
+    }
+
+
+    int slow_frames_count() {
+        return slow_counter;
+    }
+
+    int seconds_passed() {
+        return  floor(currentTime.asSeconds());
+    }
+
+    private:
+        sf::Clock clock;
+
+        sf::Time currentTime;
+
+        sf::Time previousTime = clock.getElapsedTime();;
+
+        int slow_counter = 0;
 
 };
 
 
 int main() {
 
-    Game_manager manager;
+    SimulationManager manager;
 
-    manager.disturb_my_scalar_field((fc :: N) / 2 , (fc:: N) / 2,  10, 100, 5);
+    TimeManager time_manager;
 
-    sf::RenderWindow window(sf::VideoMode(fc :: N, fc :: N), "SIV4");
+    manager.disturb_my_scalar_field((manager.size) / 2 , (manager.size) / 2,  10, 100, 1);
+
+    sf::RenderWindow window(sf::VideoMode(manager.size, manager.size), "SIV4");
     window.setFramerateLimit(manager.FPS);
 
 
     sf::Vertex line1 [] =
     {
     sf::Vertex(sf::Vector2f(78, 0)),
-    sf::Vertex(sf::Vector2f(78, fc :: N  / 2 - 5 ))
+    sf::Vertex(sf::Vector2f(78, manager.size  / 2 - 5 ))
     };
 
     sf::Vertex line2 [] =
     {
-    sf::Vertex(sf::Vector2f(78, fc :: N / 2 + 5 )),
-    sf::Vertex(sf::Vector2f(78, fc :: N ))
+    sf::Vertex(sf::Vector2f(78, manager.size / 2 + 5 )),
+    sf::Vertex(sf::Vector2f(78, manager.size ))
     };
 
-    sf::Clock clock;
-    sf::Time previousTime = clock.getElapsedTime();
-    sf::Time currentTime;
-
-    int slow_counter = 0;
 
     while (window.isOpen())
     {
-        currentTime = clock.getElapsedTime();
+        time_manager.count_fps();
 
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -146,20 +182,11 @@ int main() {
         window.draw(line2, 2, sf :: Lines);
 
         window.display();
-
-        currentTime = clock.getElapsedTime();
-        float fps = 1.0f / (currentTime.asSeconds() - previousTime.asSeconds());
-        if (fps <= manager.BAD_FPS) {
-            slow_counter++;
-        }
-        previousTime = currentTime;
-
-
 }
 
-    std :: cout <<  "slow_frames " << slow_counter << '\n';
-    std :: cout << "time_elapsed " <<  floor(currentTime.asSeconds()) << '\n';
-
+    std :: cout <<  "slow_frames " << time_manager.slow_frames_count() << '\n';
+    std :: cout << "time_elapsed " << time_manager.seconds_passed() << '\n';
 
     return 0;
 }
+

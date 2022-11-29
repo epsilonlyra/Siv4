@@ -6,7 +6,6 @@
 #include<memory>
 
 
-
     struct base_exception {
         std :: string virtual what() = 0;
     };
@@ -15,13 +14,9 @@
         std::string what() override;
     };
 
-
-
-
 namespace fc  {
 
-    const int N = 300;
-
+    template<int N >
     class Grid {
         private:
 
@@ -50,25 +45,17 @@ namespace fc  {
 
             Grid& operator*(double alpha);
 
-
-            // destructor (1/5)
-
-            ~Grid();
-
             // copy_constructor (2/5)
             Grid(const Grid& other);
-
-
-
-
     };
 
+
+    template <int N>
     class Scalar_Field {
         private:
-            Grid phi_grid;
-            Grid dot_phi_grid;
-            const Grid c;
-
+            Grid<N> phi_grid;
+            Grid<N> dot_phi_grid;
+            const Grid<N> c;
 
 
 
@@ -77,7 +64,7 @@ namespace fc  {
 
             double dot_phi(int x, int y) const;
 
-            Scalar_Field(Grid init_phi, Grid init_dot_phi);
+            Scalar_Field(Grid<N> init_phi, Grid<N> init_dot_phi);
 
             Scalar_Field();
 
@@ -86,10 +73,10 @@ namespace fc  {
             void evolve(double dt);
 
             void apply_boundaries();
-
-
     };
 
 }
+
+#include<field_class.tpp>
 
 #endif
