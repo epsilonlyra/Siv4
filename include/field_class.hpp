@@ -14,6 +14,9 @@
         std::string what() override;
     };
 
+
+
+
 namespace fc  {
 
     template<int N >

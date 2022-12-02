@@ -5,6 +5,18 @@
 #include "field_class.hpp"
 
 
+struct font_not_loaded  : base_exception {
+        std::string what() override {
+            return std::string("Font not found  on the expected reliative path from the executable\n");
+        }
+};
+
+void load_font_from_file(sf :: Font& font, std :: string& adress_from_executable) {
+    if(!font.loadFromFile(adress_from_executable)) {
+        throw(font_not_loaded());
+    }
+}
+
 template<int N>
 void update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
 
@@ -145,8 +157,17 @@ int main() {
 
     sf :: Font font;
 
-    //executablefile  must be in the build folder!!!!!
-    font.loadFromFile("../assets/sus.ttf");
+    std :: string file = "../assets/sus.ttf";
+     try {
+        load_font_from_file(font, file );
+    }
+
+    catch (font_not_loaded& error) {
+        std :: cout << error.what();
+    }
+
+
+
 
     SimulationManager<300> manager;
 
