@@ -17,7 +17,7 @@
 namespace fc  {
 
     template<int N >
-    class Grid {
+    class Grid final {
         private:
 
             std :: unique_ptr <std :: unique_ptr <double []> []> ptr;
@@ -51,7 +51,7 @@ namespace fc  {
 
 
     template <int N>
-    class Scalar_Field {
+    class Scalar_Field final  {
         private:
             Grid<N> phi_grid;
             Grid<N> dot_phi_grid;

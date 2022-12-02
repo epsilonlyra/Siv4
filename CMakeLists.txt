@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(SIV4 VERSION 0.1)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 
 set(CMAKE_CXX_FLAGS "-O3")
@@ -17,7 +17,9 @@ set(CMAKE_CXX_FLAGS "-O3")
 find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)
 
 # Compile executable
-add_executable(SIV4 main.cpp include/source/field_class.cpp)
+add_executable(SIV4 main.cpp
+                include/source/field_class.cpp
+                )
 
 # Set include directory search paths
 target_include_directories(SIV4

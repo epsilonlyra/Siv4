@@ -6,7 +6,7 @@ using namespace fc;
 
 
 //---------------------------------------------------------------------
-// Scalar Field methods
+// Grid methods
 
 template<int N>
 Grid<N> :: Grid() : ptr(std :: make_unique< std ::  unique_ptr<double []>[] >(N)) {

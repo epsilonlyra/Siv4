@@ -1,8 +1,9 @@
-
-#include "field_class.hpp"
 #include <SFML/Graphics.hpp>
 #include <map>
 #include<string>
+
+#include "field_class.hpp"
+
 
 template<int N>
 void update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
@@ -23,12 +24,37 @@ void update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
     }
 }
 
+class FPSdrawer final  : public sf :: Drawable  {
+    private :
+        sf :: Text text;
 
-class SimulationManager {
+    public:
+
+        FPSdrawer(int size, int x, int y, sf :: Font& font) {
+            text.setFont(font);
+            text.setCharacterSize(size);
+            text.setFillColor(sf::Color::Green);
+            text.setPosition(x, y);
+        }
+
+        void  set_FPS(int FPS) {
+            text.setString(std :: to_string(FPS));
+        }
+
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+            target.draw(text);
+        }
+
+};
+
+template<int size>
+class SimulationManager final  {
 
     public  :
 
-        int const  static size = 300;
+        int get_size() {
+            return size;
+        }
 
         SimulationManager() {
             texture.create(size, size);
@@ -36,9 +62,7 @@ class SimulationManager {
             image.create(size, size, sf :: Color ::  Red);
         }
 
-        const  static int FPS = 30;
-
-
+        const  int FPS = 30;
 
         void pause() {
             game_state["paused"] = !game_state["paused"];
@@ -51,8 +75,9 @@ class SimulationManager {
             window.draw(sprite);
         }
 
-        void evolve_my_scalar_field(double dt) {
 
+
+        void evolve_my_scalar_field(double dt) {
             if (!game_state["paused"]) {
                 scalar.evolve(dt);
             }
@@ -68,7 +93,6 @@ class SimulationManager {
 
         std :: map<std :: string, bool> game_state {{"paused", false}};
 
-
         fc :: Scalar_Field<size> scalar;
 
         sf :: Image image;
@@ -78,10 +102,11 @@ class SimulationManager {
         sf :: Sprite sprite;
 };
 
-class TimeManager  {
+class TimeManager  final  {
 
     public:
-         const static int BAD_FPS = 27;
+         const int BAD_FPS = 27;
+
 
     int count_fps() {
 
@@ -94,6 +119,7 @@ class TimeManager  {
         previousTime = currentTime;
         return fps;
     }
+
 
 
     int slow_frames_count() {
@@ -115,35 +141,41 @@ class TimeManager  {
 
 };
 
-
 int main() {
 
-    SimulationManager manager;
+    sf :: Font font;
+
+    //executablefile  must be in the build folder!!!!!
+    font.loadFromFile("../assets/sus.ttf");
+
+    SimulationManager<300> manager;
 
     TimeManager time_manager;
 
-    manager.disturb_my_scalar_field((manager.size) / 2 , (manager.size) / 2,  10, 100, 1);
+    FPSdrawer fps_drawer(manager.get_size() / 15, 0, 0, font);
 
-    sf::RenderWindow window(sf::VideoMode(manager.size, manager.size), "SIV4");
+    manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  10, 100, 1);
+
+    sf::RenderWindow window(sf::VideoMode(manager.get_size(), manager.get_size()), "SIV4");
     window.setFramerateLimit(manager.FPS);
 
 
     sf::Vertex line1 [] =
     {
     sf::Vertex(sf::Vector2f(78, 0)),
-    sf::Vertex(sf::Vector2f(78, manager.size  / 2 - 5 ))
+    sf::Vertex(sf::Vector2f(78, manager.get_size()  / 2 - 5 ))
     };
 
     sf::Vertex line2 [] =
     {
-    sf::Vertex(sf::Vector2f(78, manager.size / 2 + 5 )),
-    sf::Vertex(sf::Vector2f(78, manager.size ))
+    sf::Vertex(sf::Vector2f(78, manager.get_size() / 2 + 5 )),
+    sf::Vertex(sf::Vector2f(78, manager.get_size()  ))
     };
 
 
     while (window.isOpen())
     {
-        time_manager.count_fps();
+        fps_drawer.set_FPS(time_manager.count_fps());
 
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -180,12 +212,14 @@ int main() {
 
         window.draw(line1, 2, sf :: Lines);
         window.draw(line2, 2, sf :: Lines);
+        window.draw(fps_drawer);
 
         window.display();
 }
 
-    std :: cout <<  "slow_frames " << time_manager.slow_frames_count() << '\n';
-    std :: cout << "time_elapsed " << time_manager.seconds_passed() << '\n';
+std :: cout <<  "slow_frames " << time_manager.slow_frames_count() << '\n';
+std :: cout << "time_elapsed " << time_manager.seconds_passed() << '\n';
+
 
     return 0;
 }
