@@ -19,8 +19,8 @@ Grid<N> :: Grid() : ptr(std :: make_unique< std ::  unique_ptr<double []>[] >(N)
 template<int N>
 double Grid<N> ::  val(int x, int y) const {
     // returns value at x,y if x,y are in boundaries; returns 0 otherwise
-    if ((x < 0) || (x >= N)) return 0;
-    if ((y < 0) || (y >= N)) return 0;
+    if ((x < 0) || (x >= N)) return 1;
+    if ((y < 0) || (y >= N)) return 1;
     return ptr[x][y];
 }
 
@@ -128,10 +128,10 @@ template<int N>
 void Scalar_Field<N> :: get_lapl() {
     lapl.clear();
     for (int x = 0; x < N; x++)
-        for (int y = 0; y < N; y++) {
+        for (int y = 1; y < N - 1; y++) {
             lapl.change_val(x, y, (phi(x,y+1) + phi(x, y-1) + phi(x+1, y) + phi(x-1, y) - phi(x,y)*4)/(dx*dx));
         }
-} 
+}
 
 template<int N>
 void  Scalar_Field<N> :: evolve() {
@@ -167,13 +167,17 @@ template<int N>
 void  Scalar_Field<N> :: apply_boundaries() {
     for (int x = 0; x < N; x++) {
         for (int y = 0; y < N; y++) {
-            if ((x == 0) || (x == N - 10)) phi_curr.change_val(x, y, 0);
+            if ((x == 0)) phi_curr.change_val(x, y, 0);
             if ((y == 0) || (y == N - 10)) phi_curr.change_val(x, y, 0);
-            if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= N/ 2 + 5 ))) phi_curr.change_val(x, y, 0);
+
+            if (x == N -1 ) {
+                phi_curr.change_val(x, y, (1 - dt/ dx) *  phi_prev.val(x, y) + dt/dx * phi_prev.val(x - 1, y));
+            }
+            //if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= N/ 2 + 5 ))) phi_curr.change_val(x, y, 0);
 
             // for some reason this hase to be at least two pixels in width
-            if (x == 77 && ((y <= ( N) / 2 - 5 )|| (y >= (N ) / 2 + 5 ))) phi_curr.change_val(x, y, 0);
-            if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= ( N ) / 2 + 5 ))) phi_curr.change_val(x, y, 0);
+           // if (x == 77 && ((y <= ( N) / 2 - 5 )|| (y >= (N ) / 2 + 5 ))) phi_curr.change_val(x, y, 0);
+           // if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= ( N ) / 2 + 5 ))) phi_curr.change_val(x, y, 0);
         }
     }
 

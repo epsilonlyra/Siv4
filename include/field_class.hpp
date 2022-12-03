@@ -48,7 +48,7 @@ namespace fc  {
             Grid operator+(const Grid& other);
 
             Grid operator*(double alpha) const;
-            
+
             Grid& operator*= (double alpha);
 
             // copy_constructor (2/5)

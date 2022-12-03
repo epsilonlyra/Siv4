@@ -175,7 +175,7 @@ int main() {
 
     FPSdrawer fps_drawer(manager.get_size() / 15, 0, 0, font);
 
-    manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  10, 100, 1);
+   // manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  10, 100, 1);
 
     sf::RenderWindow window(sf::VideoMode(manager.get_size(), manager.get_size()), "SIV4");
     window.setFramerateLimit(manager.FPS);
@@ -219,7 +219,7 @@ int main() {
 
             if (event.type = sf :: Event :: MouseButtonPressed) {
 
-               manager.disturb_my_scalar_field(event.mouseButton.x, event.mouseButton.y,  50, 50,  1);
+               manager.disturb_my_scalar_field(event.mouseButton.x, event.mouseButton.y,  5, 5,  1);
             }
         }
 
