@@ -63,7 +63,7 @@ namespace fc  {
             Grid<N> phi_prev;
             Grid<N> lapl;
             Grid<N> temp;
-            double const dt=0.02;
+            double const dt=0.7;
             double const dx=1;
 
         public:

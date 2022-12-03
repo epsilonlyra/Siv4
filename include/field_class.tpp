@@ -38,7 +38,7 @@ void  Grid<N> :: change_val(int x, int y, double new_value) {
 template<int N>
 Grid <N> Grid<N> :: partial_x() {
     Grid temp = Grid();
-    for (int x = 1; x < N - 1; x++)
+    for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) {
             temp.change_val(x, y, (val(x + 1, y) - val(x - 1, y)) / 2);
         }
@@ -50,7 +50,7 @@ template<int N>
 Grid <N> Grid<N> ::  partial_y() {
     Grid temp;
     for (int x = 0; x < N; x++)
-        for (int y = 1; y < N - 1; y++) {
+        for (int y = 0; y < N; y++) {
             temp.change_val(x, y, (val(x, y + 1) - val(x, y - 1)) / 2);
         }
 
@@ -86,9 +86,7 @@ Grid<N>& Grid<N> :: operator*= (double alpha) {
 
 template<int N>
 Grid<N> Grid<N> :: operator*(const double alpha) const {
-    Grid<N> temp;
-    temp.clear();
-    temp += (*this); 
+    Grid<N> temp(*this);
     temp *= alpha;
     return temp;
 }
@@ -131,7 +129,7 @@ void Scalar_Field<N> :: get_lapl() {
     lapl.clear();
     for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) {
-            lapl.change_val(x, y, (phi(x,y+1) + phi(x, y-1) + phi(x+1, y) + phi(x-1, y) - phi(x,y))/(dx*dx));
+            lapl.change_val(x, y, (phi(x,y+1) + phi(x, y-1) + phi(x+1, y) + phi(x-1, y) - phi(x,y)*4)/(dx*dx));
         }
 } 
 
