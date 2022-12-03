@@ -76,14 +76,24 @@ Grid<N> Grid<N> :: operator+(const Grid& other) {
 }
 
 template<int N>
-Grid<N>& Grid<N> ::  operator*(double alpha) {
+Grid<N>& Grid<N> :: operator*= (double alpha) {
     for (int x = 0; x < N; x++)
         for (int y = 0; y < N; y++) {
             ptr[x][y] *= alpha;
         }
-
     return *this;
 }
+
+template<int N>
+Grid<N> Grid<N> :: operator*(const double alpha) const {
+    Grid<N> temp;
+    temp.clear();
+    temp += (*this); 
+    temp *= alpha;
+    return temp;
+}
+
+
 
 
 template<int N>
@@ -94,33 +104,50 @@ Grid <N>:: Grid (const Grid<N>& other) : Grid<N>() {
         }
 }
 
+template<int N>
+void  Grid<N> :: clear() {
+    for (int x = 0; x < N; x++)
+        for (int y = 0; y < N; y++) {
+            ptr[x][y] = 0;
+        }
+}
+
 //---------------------------------------------------------------------
 // Scalar Field methods
 
 template<int N>
 double Scalar_Field<N> ::  phi(int x, int y) const {
-    return phi_grid.val(x, y);
+    return phi_curr.val(x, y);
 }
 
 template<int N>
-double Scalar_Field<N> ::  dot_phi(int x, int y) const {
-    return dot_phi_grid.val(x, y);
-}
+Scalar_Field<N> :: Scalar_Field(Grid<N> init_phi, Grid<N> init_dot_phi) : phi_prev(init_phi), phi_curr(init_phi+init_dot_phi*dt) {}
 
 template<int N>
-Scalar_Field<N> :: Scalar_Field (Grid<N> init_phi, Grid<N> init_dot_phi) : phi_grid(init_phi), dot_phi_grid(init_dot_phi) {}
+Scalar_Field<N> :: Scalar_Field() : Scalar_Field<N> :: Scalar_Field<N>( Grid<N>(), Grid<N>()) {}
 
 template<int N>
-Scalar_Field<N> :: Scalar_Field () : Scalar_Field<N> :: Scalar_Field<N>( Grid<N>(), Grid<N>()) {}
+void Scalar_Field<N> :: get_lapl() {
+    lapl.clear();
+    for (int x = 0; x < N; x++)
+        for (int y = 0; y < N; y++) {
+            lapl.change_val(x, y, (phi(x,y+1) + phi(x, y-1) + phi(x+1, y) + phi(x-1, y) - phi(x,y))/(dx*dx));
+        }
+} 
 
 template<int N>
-void  Scalar_Field<N> :: evolve(double dt) {
+void  Scalar_Field<N> :: evolve() {
+    get_lapl();
 
-    phi_grid += dot_phi_grid*(dt);
+    temp.clear();
+    temp += phi_curr;
 
-    dot_phi_grid += ((phi_grid.partial_y()).partial_y())* dt;
+    phi_curr *= 2;
+    phi_curr += phi_prev*(-1);
+    phi_curr += lapl*dt*dt;
 
-    dot_phi_grid += ((phi_grid.partial_x()).partial_x())* dt;
+    phi_prev.clear();
+    phi_prev += temp;
 
     apply_boundaries();
 }
@@ -130,7 +157,7 @@ void Scalar_Field<N> :: create_disturbance (int x, int y, int width, int length,
      for (int i = 0; i < width; i++) {
              for (int j = 0; j < length; j++) {
                  try {
-                    phi_grid.change_val(x - width/ 2 + i, y - length /2 +  j, amplitude);
+                    phi_curr.change_val(x - width/ 2 + i, y - length /2 +  j, amplitude);
                  }
 
                  catch (const out_of_boundary_change& error) {}
@@ -142,16 +169,13 @@ template<int N>
 void  Scalar_Field<N> :: apply_boundaries() {
     for (int x = 0; x < N; x++) {
         for (int y = 0; y < N; y++) {
-            if ((x == 0) || (x == N - 10)) phi_grid.change_val(x, y, 0);
-            if ((y == 0) || (y == N - 10)) phi_grid.change_val(x, y, 0);
-            if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= N/ 2 + 5 ))) phi_grid.change_val(x, y, 0);
-
-            if ((x ==  0) || (x == N)) dot_phi_grid.change_val(x, y, 0);
-            if ((y == 0) || (y == N)) dot_phi_grid.change_val(x, y, 0);
+            if ((x == 0) || (x == N - 10)) phi_curr.change_val(x, y, 0);
+            if ((y == 0) || (y == N - 10)) phi_curr.change_val(x, y, 0);
+            if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= N/ 2 + 5 ))) phi_curr.change_val(x, y, 0);
 
             // for some reason this hase to be at least two pixels in width
-            if (x == 77 && ((y <= ( N) / 2 - 5 )|| (y >= (N ) / 2 + 5 ))) dot_phi_grid.change_val(x, y, 0);
-            if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= ( N ) / 2 + 5 ))) dot_phi_grid.change_val(x, y, 0);
+            if (x == 77 && ((y <= ( N) / 2 - 5 )|| (y >= (N ) / 2 + 5 ))) phi_curr.change_val(x, y, 0);
+            if (x == 76 && ((y <= (N) / 2 - 5 )|| (y >= ( N ) / 2 + 5 ))) phi_curr.change_val(x, y, 0);
         }
     }
 

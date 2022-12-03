@@ -37,6 +37,7 @@ namespace fc  {
             void change_val(int x, int y, double new_value);
                 // changes value at xy, if x,y are in boundaries; throws an error otherwise
 
+            void clear();
 
             Grid partial_x();
 
@@ -46,7 +47,9 @@ namespace fc  {
 
             Grid operator+(const Grid& other);
 
-            Grid& operator*(double alpha);
+            Grid operator*(double alpha) const;
+            
+            Grid& operator*= (double alpha);
 
             // copy_constructor (2/5)
             Grid(const Grid& other);
@@ -56,24 +59,25 @@ namespace fc  {
     template <int N>
     class Scalar_Field final  {
         private:
-            Grid<N> phi_grid;
-            Grid<N> dot_phi_grid;
-            const Grid<N> c;
-
-
+            Grid<N> phi_curr;
+            Grid<N> phi_prev;
+            Grid<N> lapl;
+            Grid<N> temp;
+            double const dt=0.02;
+            double const dx=1;
 
         public:
             double phi(int x, int y) const;
-
-            double dot_phi(int x, int y) const;
 
             Scalar_Field(Grid<N> init_phi, Grid<N> init_dot_phi);
 
             Scalar_Field();
 
+            void get_lapl();
+
             void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
-            void evolve(double dt);
+            void evolve();
 
             void apply_boundaries();
     };

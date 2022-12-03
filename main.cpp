@@ -91,7 +91,7 @@ class SimulationManager final  {
 
         void evolve_my_scalar_field(double dt) {
             if (!game_state["paused"]) {
-                scalar.evolve(dt);
+                scalar.evolve();
             }
         }
 
