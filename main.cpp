@@ -2,156 +2,10 @@
 #include <map>
 #include<string>
 
-#include "field_class.hpp"
+#include "simulation.hpp"
 
 
-struct font_not_loaded  : base_exception {
-        std::string what() override {
-            return std::string("Font not found  on the expected reliative path from the executable\n");
-        }
-};
-
-void load_font_from_file(sf :: Font& font, std :: string& adress_from_executable) {
-    if(!font.loadFromFile(adress_from_executable)) {
-        throw(font_not_loaded());
-    }
-}
-
-template<int N>
-void update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
-
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-
-            if (scalar.phi(i, j) > 0) {
-                sf :: Color color( scalar.phi(i, j) * 255, 0, 0);
-                image.setPixel(i, j, color);
-            }
-            else {
-                sf :: Color color(0, 0, -scalar.phi(i, j) * 255);
-                image.setPixel(i, j, color);
-            }
-
-        }
-    }
-}
-
-class FPSdrawer final  : public sf :: Drawable  {
-    private :
-        sf :: Text text;
-
-    public:
-
-        FPSdrawer(int size, int x, int y, sf :: Font& font) {
-            text.setFont(font);
-            text.setCharacterSize(size);
-            text.setFillColor(sf::Color::Green);
-            text.setPosition(x, y);
-        }
-
-        void  set_FPS(int FPS) {
-            text.setString(std :: to_string(FPS));
-        }
-
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
-            target.draw(text);
-        }
-
-};
-
-template<int size>
-class SimulationManager final  {
-
-    public  :
-
-        int get_size() {
-            return size;
-        }
-
-        SimulationManager() {
-            texture.create(size, size);
-            sprite.setTexture(texture);
-            image.create(size, size, sf :: Color ::  Red);
-        }
-
-        const  int FPS = 30;
-
-        void pause() {
-            game_state["paused"] = !game_state["paused"];
-        }
-
-
-        void draw_my_scalar_field(sf :: RenderWindow& window) {
-            update_Image(scalar, image);
-            texture.update(image);
-            window.draw(sprite);
-        }
-
-
-
-        void evolve_my_scalar_field(double dt) {
-            if (!game_state["paused"]) {
-                scalar.evolve();
-            }
-        }
-
-
-        void disturb_my_scalar_field(int x, int y, int width, int length, int amplitude) {
-            scalar.create_disturbance(x, y, width, length, amplitude);
-        }
-
-
-    private:
-
-        std :: map<std :: string, bool> game_state {{"paused", false}};
-
-        fc :: Scalar_Field<size> scalar;
-
-        sf :: Image image;
-
-        sf :: Texture texture;
-
-        sf :: Sprite sprite;
-};
-
-class TimeManager  final  {
-
-    public:
-         const int BAD_FPS = 27;
-
-
-    int count_fps() {
-
-        currentTime = clock.getElapsedTime();
-
-        int  fps =  floor(1.0f / (currentTime.asSeconds() - previousTime.asSeconds()));
-        if (fps <= BAD_FPS) {
-            slow_counter++;
-        }
-        previousTime = currentTime;
-        return fps;
-    }
-
-
-
-    int slow_frames_count() {
-        return slow_counter;
-    }
-
-    int seconds_passed() {
-        return  floor(currentTime.asSeconds());
-    }
-
-    private:
-        sf::Clock clock;
-
-        sf::Time currentTime;
-
-        sf::Time previousTime = clock.getElapsedTime();;
-
-        int slow_counter = 0;
-
-};
+//using namespace sim;
 
 int main() {
 
@@ -166,14 +20,11 @@ int main() {
         std :: cout << error.what();
     }
 
+    sim :: SimulationManager<300> manager;
 
+    sim :: TimeManager time_manager;
 
-
-    SimulationManager<300> manager;
-
-    TimeManager time_manager;
-
-    FPSdrawer fps_drawer(manager.get_size() / 15, 0, 0, font);
+    sim :: FPSdrawer fps_drawer(manager.get_size() / 15, 0, 0, font);
 
    // manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  10, 100, 1);
 
@@ -242,6 +93,6 @@ std :: cout <<  "slow_frames " << time_manager.slow_frames_count() << '\n';
 std :: cout << "time_elapsed " << time_manager.seconds_passed() << '\n';
 
 
-    return 0;
+return 0;
 }
 

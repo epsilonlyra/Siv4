@@ -91,9 +91,6 @@ Grid<N> Grid<N> :: operator*(const double alpha) const {
     return temp;
 }
 
-
-
-
 template<int N>
 Grid <N>:: Grid (const Grid<N>& other) : Grid<N>() {
     for (int x = 0; x < N; x++)

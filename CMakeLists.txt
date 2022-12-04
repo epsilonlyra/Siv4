@@ -19,6 +19,7 @@ find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)
 # Compile executable
 add_executable(SIV4 main.cpp
                 include/source/field_class.cpp
+                include/source/simulation.cpp
                 )
 
 # Set include directory search paths
