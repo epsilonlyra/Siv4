@@ -27,7 +27,7 @@ int main() {
 
     sim :: FPSdrawer fps_drawer(manager.get_size() / 15, 0, 0, font);
 
-   // manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  10, 100, 1);
+    manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  1, 100, 1);
 
     sf::RenderWindow window(sf::VideoMode(manager.get_size(), manager.get_size()), "SIV4");
     window.setFramerateLimit(manager.FPS);
@@ -64,11 +64,8 @@ int main() {
 
         window.clear(sf::Color::Black);
 
-
-
         manager.evolve_my_scalar_field();
         manager.draw_my_scalar_field(window);
-
 
         window.draw(fps_drawer);
 

@@ -134,7 +134,7 @@ void Scalar_Field<N> :: get_lapl() {
 }
 
 template<int N>
-void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> walls) {
+void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls) {
     get_lapl();
 
     temp.clear();
@@ -146,7 +146,7 @@ void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> walls) {
 
     phi_prev.clear();
     phi_prev += temp;
-    apply_boundaries(walls);
+    apply_boundaries(reflectingwalls, absorbingwalls);
 }
 
 template<int N>
@@ -163,8 +163,11 @@ void Scalar_Field<N> :: create_disturbance (int x, int y, int width, int length,
 }
 
 template<int N>
-void  Scalar_Field<N> :: apply_boundaries(std :: vector<ReflectingWall<N>> walls) {
-    for (auto wall : walls) {
+void  Scalar_Field<N> :: apply_boundaries(std :: vector<ReflectingWall<N>> rwalls, std :: vector<AbsorbingWall<N>> awalls) {
+    for (auto wall : rwalls) {
+        wall.apply_condition(phi_curr, phi_prev, dx, dt);
+    }
+    for (auto wall : awalls) {
         wall.apply_condition(phi_curr, phi_prev, dx, dt);
     }
 }
@@ -190,6 +193,8 @@ Wall<N> :: Wall(int wall_coordinate, int start_coordinate, int end_coordinate, b
         line[1] =  sf::Vertex(sf::Vector2f( end_coordinate, wall_coordinate));
     }
  }
+
+
 
 
 //---------------------------------------------------------------------
@@ -219,23 +224,24 @@ template<int N>
 void  AbsorbingWall<N> ::  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev, double dx, double dt) {
     if (Wall<N> :: vertical) {
         int x = Wall<N> :: wall_coordinate;
-        for (int y = Wall<N> :: start_coordinate;  y <  Wall<N> :: end_coordinate; y++){
-            double new_val = (1 - dt/ dx) *  phi_prev.val(x, y) + (dt / dx * phi_prev.val(x - 1, y));
+        for (int y = Wall<N> :: start_coordinate;  y <  Wall<N> :: end_coordinate; y++) {
+            double new_val = (1 - dt/ dx) *  phi_prev.val(x, y) + (dt / dx * phi_prev.val(x + orientation, y));
             phi_curr.change_val(x, y, new_val);
+            phi_curr.change_val(x - orientation, y, 0);
         }
     }
     else {
         int y = Wall<N> :: wall_coordinate;
-        for (int x = Wall<N> :: start_coordinate;  x < Wall<N> ::  end_coordinate; x++){
-            double new_val = (1 - dt/ dx) *  phi_prev.val(x, y) + (dt / dx * phi_prev.val(x, y - 1));
+        for (int x = Wall<N> :: start_coordinate;  x < Wall<N> ::  end_coordinate; x++) {
+            double new_val = (1 - dt/ dx) *  phi_prev.val(x, y) + (dt / dx * phi_prev.val(x, y - orientation));
             phi_curr.change_val(x, y, new_val);
         }
     }
  }
 
 template<int N>
-AbsorbingWall<N> :: AbsorbingWall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical) :
-                                    Wall<N> (wall_coordinate, start_coordinate,end_coordinate, vertical) {}
+AbsorbingWall<N> :: AbsorbingWall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical, int orientation) :
+                                    Wall<N> (wall_coordinate, start_coordinate, end_coordinate, vertical), orientation(orientation) {}
 
 
 #endif

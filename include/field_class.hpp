@@ -68,7 +68,7 @@ namespace fc  {
 
 
     template<int N>
-    class ReflectingWall : public Wall<N> {
+    class ReflectingWall final : public Wall<N> {
         public:
             void  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev, const double dx, const double dt) override;
 
@@ -77,13 +77,17 @@ namespace fc  {
     };
 
     template<int N>
-    class AbsorbingWall : public Wall<N> {
+    class AbsorbingWall  final : public Wall<N> {
+
+
         public:
             void  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev, const double dx, const double dt) override;
 
-            AbsorbingWall(int wall_coordinate, int start_coordinate, int end_coordinate,  bool vertical);
-    };
+            AbsorbingWall(int wall_coordinate, int start_coordinate, int end_coordinate,  bool vertical, int orientation);
 
+        private:
+           int orientation = 1;
+};
 
     template <int N>
     class Scalar_Field final  {
@@ -108,9 +112,9 @@ namespace fc  {
 
             void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
-            void evolve(std :: vector<ReflectingWall<N>> walls);
+            void evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls);
 
-            void apply_boundaries(std :: vector<ReflectingWall<N>> walls);
+            void apply_boundaries(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls);
     };
 
 }

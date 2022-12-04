@@ -41,14 +41,13 @@ class SimulationManager final  {
 
         void draw_my_scalar_field(sf :: RenderWindow& window);
 
-
-
         void evolve_my_scalar_field();
-
-
 
         void disturb_my_scalar_field(int x, int y, int width, int length, int amplitude);
 
+        void add_reflecting_wall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical);
+
+        void add_super_absorber(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical);
 
     private:
 
@@ -63,6 +62,8 @@ class SimulationManager final  {
         sf :: Sprite sprite;
 
         std :: vector<ReflectingWall<size>> reflectingwalls;
+
+        std :: vector<AbsorbingWall<size>> absorbingwalls;
 
 };
 

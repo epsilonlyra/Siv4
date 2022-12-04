@@ -36,13 +36,13 @@ SimulationManager<size> :: SimulationManager() {
             texture.create(size, size);
             sprite.setTexture(texture);
             image.create(size, size, sf :: Color ::  Red);
+            absorbingwalls.emplace_back(1, 0, 300, true, 1);
+            absorbingwalls.emplace_back(size - 2, 0, 300, true, -1);
+            absorbingwalls.emplace_back(1, 0, 300, false, -1);
+            absorbingwalls.emplace_back(size - 2, 0, 300, false, 1);
 
-            reflectingwalls.emplace_back(100, 0, 300, true);
-            reflectingwalls.emplace_back(200, 0, 300, false);
-            reflectingwalls.emplace_back(250,0, 300, true);
-
-
-
+            add_super_absorber(100, 0, 150, true);
+            add_super_absorber(100, 170, size, true);
 }
 
 template<int size>
@@ -56,7 +56,11 @@ void  SimulationManager<size> :: draw_my_scalar_field(sf :: RenderWindow& window
             texture.update(image);
             window.draw(sprite);
             for (auto wall : reflectingwalls) {
-            window.draw(wall);
+                window.draw(wall);
+            }
+
+            for (auto wall : absorbingwalls) {
+                window.draw(wall);
             }
 }
 
@@ -64,13 +68,31 @@ void  SimulationManager<size> :: draw_my_scalar_field(sf :: RenderWindow& window
 template<int size>
 void  SimulationManager<size> :: evolve_my_scalar_field() {
     if (!game_state["paused"]) {
-        scalar.evolve(reflectingwalls);
+        scalar.evolve(reflectingwalls, absorbingwalls);
     }
 }
 
 template <int size>
 void SimulationManager<size> :: disturb_my_scalar_field(int x, int y, int width, int length, int amplitude) {
     scalar.create_disturbance(x, y, width, length, amplitude);
+}
+
+template<int size>
+void SimulationManager<size> :: add_reflecting_wall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical) {
+    reflectingwalls.emplace_back(wall_coordinate, start_coordinate, end_coordinate, vertical);
+}
+
+
+template<int size>
+void  SimulationManager<size> :: add_super_absorber(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical) {
+    if (vertical) {
+        absorbingwalls.emplace_back(wall_coordinate, start_coordinate, end_coordinate, vertical, 1);
+        absorbingwalls.emplace_back(wall_coordinate -2, start_coordinate, end_coordinate, vertical, -1);
+    }
+    else {
+        absorbingwalls.emplace_back(wall_coordinate, start_coordinate, end_coordinate, vertical, 1);
+        absorbingwalls.emplace_back(wall_coordinate + 2, start_coordinate, end_coordinate, vertical, -1);
+    }
 }
 
 
