@@ -2,20 +2,11 @@
 #define H_FIELD_CLASS
 
 #include<iostream>
-#include <cmath>
 #include<memory>
+#include<vector>
+#include <SFML/Graphics.hpp>
 
-
-    struct base_exception {
-        std :: string virtual what() = 0;
-    };
-
-    struct out_of_boundary_change final : base_exception {
-        std::string what() override;
-    };
-
-
-
+#include "errors.hpp"
 
 namespace fc  {
 
@@ -56,6 +47,44 @@ namespace fc  {
     };
 
 
+
+    template<int N>
+    class Wall : public sf :: Drawable {
+        protected :
+            int wall_coordinate;
+            int start_coordinate = 0;
+            int end_coordinate = 0;
+            bool vertical = false;
+            sf::Vertex line[2];
+
+
+        public:
+
+            Wall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical);
+            void virtual apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev, double dx, double dt) = 0;
+
+            void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+    };
+
+
+    template<int N>
+    class ReflectingWall : public Wall<N> {
+        public:
+            void  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev, const double dx, const double dt) override;
+
+            ReflectingWall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical);
+
+    };
+
+    template<int N>
+    class AbsorbingWall : public Wall<N> {
+        public:
+            void  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev, const double dx, const double dt) override;
+
+            AbsorbingWall(int wall_coordinate, int start_coordinate, int end_coordinate,  bool vertical);
+    };
+
+
     template <int N>
     class Scalar_Field final  {
         private:
@@ -63,10 +92,12 @@ namespace fc  {
             Grid<N> phi_prev;
             Grid<N> lapl;
             Grid<N> temp;
-            double const dt=0.7;
-            double const dx=1;
+
 
         public:
+            double const dt = 0.7;
+            double const dx = 1;
+
             double phi(int x, int y) const;
 
             Scalar_Field(Grid<N> init_phi, Grid<N> init_dot_phi);
@@ -77,13 +108,13 @@ namespace fc  {
 
             void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
-            void evolve();
+            void evolve(std :: vector<ReflectingWall<N>> walls);
 
-            void apply_boundaries();
+            void apply_boundaries(std :: vector<ReflectingWall<N>> walls);
     };
 
 }
 
-#include<simulation.tpp>
+#include "field_class.tpp"
 
 #endif

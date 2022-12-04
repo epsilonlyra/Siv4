@@ -1,12 +1,11 @@
 #ifndef T_SIMULATION
 #define T_SIMULATION
 
-#include "field_class.hpp"
+
 using namespace sim;
 
-
-template <typename T>
-void update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
+template <int  N>
+void sim :: update_Image(fc :: Scalar_Field<N>& scalar, sf :: Image& image) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
 
@@ -37,6 +36,13 @@ SimulationManager<size> :: SimulationManager() {
             texture.create(size, size);
             sprite.setTexture(texture);
             image.create(size, size, sf :: Color ::  Red);
+
+            reflectingwalls.emplace_back(100, 0, 300, true);
+            reflectingwalls.emplace_back(200, 0, 300, false);
+            reflectingwalls.emplace_back(250,0, 300, true);
+
+
+
 }
 
 template<int size>
@@ -49,13 +55,16 @@ void  SimulationManager<size> :: draw_my_scalar_field(sf :: RenderWindow& window
             update_Image(scalar, image);
             texture.update(image);
             window.draw(sprite);
-        }
+            for (auto wall : reflectingwalls) {
+            window.draw(wall);
+            }
+}
 
 
 template<int size>
-void  SimulationManager<size> :: evolve_my_scalar_field(double dt) {
+void  SimulationManager<size> :: evolve_my_scalar_field() {
     if (!game_state["paused"]) {
-        scalar.evolve();
+        scalar.evolve(reflectingwalls);
     }
 }
 

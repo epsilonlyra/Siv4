@@ -1,16 +1,13 @@
-#include<simulation.hpp>
+#include "simulation.hpp"
+
+#include <cmath>
 
 
-using namespace sim;
 
-
-std::string font_not_loaded  :: what()  {
-            return std::string("Font not found  on the expected reliative path from the executable\n");
-}
-
-void load_font_from_file(sf :: Font& font, std :: string& adress_from_executable) {
+void sim :: load_font_from_file(sf :: Font& font, std :: string& adress_from_executable) {
     if(!font.loadFromFile(adress_from_executable)) {
         throw(font_not_loaded());
+    }
 }
 
 
@@ -19,7 +16,7 @@ void load_font_from_file(sf :: Font& font, std :: string& adress_from_executable
 // FPSdrawer methods
 
 
-FPSdrawer :: FPSdrawer (int size, int x, int y, sf :: Font& font) {
+sim :: FPSdrawer :: FPSdrawer (int size, int x, int y, sf :: Font& font) {
             text.setFont(font);
             text.setCharacterSize(size);
             text.setFillColor(sf::Color::Green);
@@ -27,12 +24,12 @@ FPSdrawer :: FPSdrawer (int size, int x, int y, sf :: Font& font) {
 }
 
 
- void  FPSdrawer  set_FPS(int FPS) {
+ void  sim :: FPSdrawer ::  set_FPS(int FPS) {
             text.setString(std :: to_string(FPS));
 }
 
 
-void  FPSdrawer draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void  sim :: FPSdrawer ::  draw(sf::RenderTarget& target, sf::RenderStates states) const {
             target.draw(text);
 }
 
@@ -40,7 +37,7 @@ void  FPSdrawer draw(sf::RenderTarget& target, sf::RenderStates states) const {
 // TimeManager methods
 
 
-int  TimeManager :: count_fps() {
+int sim ::  TimeManager :: count_fps() {
 
         currentTime = clock.getElapsedTime();
 
@@ -53,14 +50,13 @@ int  TimeManager :: count_fps() {
 }
 
 
-int TimeManager ::  slow_frames_count() {
+int sim ::  TimeManager ::  slow_frames_count() {
         return slow_counter;
     }
 
-    int  TimeManager :: seconds_passed() {
+    int sim ::  TimeManager :: seconds_passed() {
         return  floor(currentTime.asSeconds());
     }
-
 
 
 

@@ -5,7 +5,7 @@
 #include "simulation.hpp"
 
 
-//using namespace sim;
+using namespace sim;
 
 int main() {
 
@@ -13,12 +13,13 @@ int main() {
 
     std :: string file = "../assets/sus.ttf";
      try {
-        load_font_from_file(font, file );
+         sim :: load_font_from_file(font, file );
     }
 
     catch (font_not_loaded& error) {
         std :: cout << error.what();
     }
+
 
     sim :: SimulationManager<300> manager;
 
@@ -30,20 +31,6 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(manager.get_size(), manager.get_size()), "SIV4");
     window.setFramerateLimit(manager.FPS);
-
-
-    sf::Vertex line1 [] =
-    {
-    sf::Vertex(sf::Vector2f(78, 0)),
-    sf::Vertex(sf::Vector2f(78, manager.get_size()  / 2 - 5 ))
-    };
-
-    sf::Vertex line2 [] =
-    {
-    sf::Vertex(sf::Vector2f(78, manager.get_size() / 2 + 5 )),
-    sf::Vertex(sf::Vector2f(78, manager.get_size()  ))
-    };
-
 
     while (window.isOpen())
     {
@@ -79,11 +66,10 @@ int main() {
 
 
 
-        manager.evolve_my_scalar_field(1);
+        manager.evolve_my_scalar_field();
         manager.draw_my_scalar_field(window);
 
-        window.draw(line1, 2, sf :: Lines);
-        window.draw(line2, 2, sf :: Lines);
+
         window.draw(fps_drawer);
 
         window.display();

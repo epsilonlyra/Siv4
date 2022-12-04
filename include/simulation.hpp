@@ -1,13 +1,12 @@
 #ifndef H_SIMULATION
 #define H_SIMULATION
 
+#include <vector>
 #include "field_class.hpp"
+#include "errors.hpp"
 
 namespace sim  {
 
-struct font_not_loaded final  : base_exception {
-        std::string what() override;
-};
 
 void load_font_from_file(sf :: Font& font, std :: string& adress_from_executable);
 
@@ -19,11 +18,11 @@ class FPSdrawer final  : public sf :: Drawable  {
         sf :: Text text;
 
     public:
-
         FPSdrawer(int size, int x, int y, sf :: Font& font);
-        void  set_FPS(int FPS);
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
+        void  set_FPS(int FPS);
+
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 
 template<int size>
@@ -62,6 +61,9 @@ class SimulationManager final  {
         sf :: Texture texture;
 
         sf :: Sprite sprite;
+
+        std :: vector<ReflectingWall<size>> reflectingwalls;
+
 };
 
 class TimeManager  final  {
@@ -84,7 +86,6 @@ class TimeManager  final  {
         int slow_counter = 0;
 
 };
-
 }
 
 #include "simulation.tpp"
