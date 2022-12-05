@@ -117,6 +117,27 @@ namespace fc  {
             void apply_boundaries(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls);
     };
 
+
+
+
+template<int N>
+
+class Source {
+    public :
+
+        void update(Scalar_Field<N>&  scalar);
+
+        void disturb(Scalar_Field<N>& scalar);
+
+        Source(int x, int y, int period);
+
+    private :
+        int period;
+        int counter = 0;
+        int x;
+        int y;
+};
+
 }
 
 #include "field_class.tpp"

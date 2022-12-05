@@ -244,4 +244,27 @@ AbsorbingWall<N> :: AbsorbingWall(int wall_coordinate, int start_coordinate, int
                                     Wall<N> (wall_coordinate, start_coordinate, end_coordinate, vertical), orientation(orientation) {}
 
 
+//---------------------------------------------------------------------
+//  Source methods
+
+template<int N>
+void Source<N> :: update(Scalar_Field<N>& scalar) {
+    counter++;
+    if (counter >= period) {
+        disturb(scalar);
+        counter = 0;
+    }
+}
+
+template<int N>
+void Source<N> :: disturb(Scalar_Field<N>& scalar) {
+    scalar.create_disturbance(x, y, 5, 5, 1);
+}
+
+template<int N>
+Source<N> ::  Source  (int x, int y, int period) : x(x), y(y), period(period) {}
+
+
+
+
 #endif

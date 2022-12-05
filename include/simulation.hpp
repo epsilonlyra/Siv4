@@ -43,6 +43,8 @@ class SimulationManager final  {
 
         void evolve_my_scalar_field();
 
+
+
         void disturb_my_scalar_field(int x, int y, int width, int length, int amplitude);
 
         void add_reflecting_wall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical);
@@ -64,6 +66,8 @@ class SimulationManager final  {
         std :: vector<ReflectingWall<size>> reflectingwalls;
 
         std :: vector<AbsorbingWall<size>> absorbingwalls;
+
+        fc ::  Source<size> test_source = Source<size>(200, 200, 10);
 
 };
 

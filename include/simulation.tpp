@@ -31,6 +31,7 @@ template <int size>
             return size;
 }
 
+
 template <int size>
 SimulationManager<size> :: SimulationManager() {
             texture.create(size, size);
@@ -40,6 +41,8 @@ SimulationManager<size> :: SimulationManager() {
             absorbingwalls.emplace_back(size - 2, 0, 300, true, -1);
             absorbingwalls.emplace_back(1, 0, 300, false, -1);
             absorbingwalls.emplace_back(size - 2, 0, 300, false, 1);
+
+            test_source = Source<size>(150, 150, 15);
 
             add_super_absorber(100, 0, 150, true);
             add_super_absorber(100, 170, size, true);
@@ -67,9 +70,12 @@ void  SimulationManager<size> :: draw_my_scalar_field(sf :: RenderWindow& window
 
 template<int size>
 void  SimulationManager<size> :: evolve_my_scalar_field() {
+
     if (!game_state["paused"]) {
+        test_source.update(scalar);
         scalar.evolve(reflectingwalls, absorbingwalls);
     }
+
 }
 
 template <int size>
