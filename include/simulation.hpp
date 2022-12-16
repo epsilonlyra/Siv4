@@ -38,12 +38,9 @@ class SimulationManager final  {
 
         void pause();
 
-
         void draw_my_scalar_field(sf :: RenderWindow& window);
 
         void evolve_my_scalar_field();
-
-
 
         void disturb_my_scalar_field(int x, int y, int width, int length, int amplitude);
 

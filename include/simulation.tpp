@@ -31,21 +31,21 @@ template <int size>
             return size;
 }
 
-
 template <int size>
 SimulationManager<size> :: SimulationManager() {
             texture.create(size, size);
             sprite.setTexture(texture);
             image.create(size, size, sf :: Color ::  Red);
-            absorbingwalls.emplace_back(1, 0, 300, true, 1);
-            absorbingwalls.emplace_back(size - 2, 0, 300, true, -1);
-            absorbingwalls.emplace_back(1, 0, 300, false, -1);
-            absorbingwalls.emplace_back(size - 2, 0, 300, false, 1);
+            absorbingwalls.emplace_back(0, 0, 300, true, 1);
+            absorbingwalls.emplace_back(size - 1, 0, 300, true, -1);
+            absorbingwalls.emplace_back(0, 0, 300, false, -1);
+            absorbingwalls.emplace_back(size - 1, 0, 300, false, 1);
 
             test_source = Source<size>(150, 150, 15);
 
             add_super_absorber(100, 0, 150, true);
-            add_super_absorber(100, 170, size, true);
+            add_reflecting_wall(100, 170, size, true);
+            add_reflecting_wall(100, 150, 170, false);
 }
 
 template<int size>
@@ -93,11 +93,11 @@ template<int size>
 void  SimulationManager<size> :: add_super_absorber(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical) {
     if (vertical) {
         absorbingwalls.emplace_back(wall_coordinate, start_coordinate, end_coordinate, vertical, 1);
-        absorbingwalls.emplace_back(wall_coordinate -2, start_coordinate, end_coordinate, vertical, -1);
+        absorbingwalls.emplace_back(wall_coordinate - 1, start_coordinate, end_coordinate, vertical, -1);
     }
     else {
         absorbingwalls.emplace_back(wall_coordinate, start_coordinate, end_coordinate, vertical, 1);
-        absorbingwalls.emplace_back(wall_coordinate + 2, start_coordinate, end_coordinate, vertical, -1);
+        absorbingwalls.emplace_back(wall_coordinate + 1, start_coordinate, end_coordinate, vertical, -1);
     }
 }
 

@@ -38,27 +38,6 @@ void  Grid<N> :: change_val(int x, int y, double new_value) {
 }
 
 
-template<int N>
-Grid <N> Grid<N> :: partial_x() {
-    Grid temp = Grid();
-    for (int x = 0; x < N; x++)
-        for (int y = 0; y < N; y++) {
-            temp.change_val(x, y, (val(x + 1, y) - val(x - 1, y)) / 2);
-        }
-
-    return temp;
-}
-
-template<int N>
-Grid <N> Grid<N> ::  partial_y() {
-    Grid temp;
-    for (int x = 0; x < N; x++)
-        for (int y = 0; y < N; y++) {
-            temp.change_val(x, y, (val(x, y + 1) - val(x, y - 1)) / 2);
-        }
-
-    return temp;
-}
 
 template<int N>
 Grid<N>&  Grid<N> :: operator+=(const Grid& other) {
@@ -227,7 +206,6 @@ void  AbsorbingWall<N> ::  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev
         for (int y = Wall<N> :: start_coordinate;  y <  Wall<N> :: end_coordinate; y++) {
             double new_val = (1 - dt/ dx) *  phi_prev.val(x, y) + (dt / dx * phi_prev.val(x + orientation, y));
             phi_curr.change_val(x, y, new_val);
-            phi_curr.change_val(x - orientation, y, 0);
         }
     }
     else {

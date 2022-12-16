@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS "-O3")
 find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)
 
 # Compile executable
-add_executable(SIV4 main.cpp include/source/field_class.cpp include/source/simulation.cpp include/source/errors.cpp)
+add_executable(SIV4 main.cpp  include/source/simulation.cpp include/source/errors.cpp)
 
 # Set include directory search paths
 target_include_directories(SIV4

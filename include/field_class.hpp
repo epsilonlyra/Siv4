@@ -30,9 +30,6 @@ namespace fc  {
 
             void clear();
 
-            Grid partial_x();
-
-            Grid partial_y();
 
             Grid& operator+=(const Grid& other);
 
