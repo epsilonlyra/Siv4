@@ -48,6 +48,10 @@ class SimulationManager final  {
 
         void add_super_absorber(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical);
 
+        void add_harmonic_oscillator(int x, int y, double period, double amplitude, double phase);
+
+        void add_impulse_oscillator(int x, int y, int period, double amplitude);
+
     private:
 
         std :: map<std :: string, bool> game_state {{"paused", false}};
@@ -64,7 +68,11 @@ class SimulationManager final  {
 
         std :: vector<AbsorbingWall<size>> absorbingwalls;
 
-        fc ::  Source<size> test_source = Source<size>(200, 200, 10);
+        std :: vector<Impulse_Source<size>> impulsesources;
+
+        std :: vector<Harmonic_Source<size>> harmonicsources;
+
+        fc ::  Impulse_Source<size> test_source = Impulse_Source<size>(200, 200, 10);
 
 };
 

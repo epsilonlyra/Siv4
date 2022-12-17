@@ -1,9 +1,11 @@
 #ifndef T_FIELD_CLASS
 #define T_FIELD_CLASS
+#define _USE_MATH_DEFINES
 
 #include <SFML/Graphics.hpp>
 
 #include <vector>
+#include <cmath>
 
 using namespace fc;
 
@@ -37,7 +39,19 @@ void  Grid<N> :: change_val(int x, int y, double new_value) {
 
 }
 
+template<int N>
+void Grid<N> :: create_disturbance (int x, int y, int width, int length,  double amplitude) {
+    // sets the grid value equal to amplitude in an area from x-width/2 to x+width/2 and from y-height/2 to y+height/2
+     for (int i = 0; i < width; i++) {
+             for (int j = 0; j < length; j++) {
+                 try {
+                    change_val(x - width/ 2 + i, y - length /2 +  j, amplitude);
+                 }
 
+                 catch (const out_of_boundary_change& error) {}
+             }
+    }
+}
 
 template<int N>
 Grid<N>&  Grid<N> :: operator+=(const Grid& other) {
@@ -113,7 +127,7 @@ void Scalar_Field<N> :: get_lapl() {
 }
 
 template<int N>
-void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls) {
+void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls, std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources) {
     get_lapl();
 
     temp.clear();
@@ -126,10 +140,12 @@ void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls
     phi_prev.clear();
     phi_prev += temp;
     apply_boundaries(reflectingwalls, absorbingwalls);
+    apply_condition(impulsesources, harmonicsources);
 }
 
 template<int N>
 void Scalar_Field<N> :: create_disturbance (int x, int y, int width, int length,  int amplitude) {
+    // sets the field value equal to amplitude in an area from x-width/2 to x+width/2 and from y-height/2 to y+height/2
      for (int i = 0; i < width; i++) {
              for (int j = 0; j < length; j++) {
                  try {
@@ -151,6 +167,15 @@ void  Scalar_Field<N> :: apply_boundaries(std :: vector<ReflectingWall<N>> rwall
     }
 }
 
+template<int N>
+void  Scalar_Field<N> :: apply_condition(std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources) {
+    for (auto source : impulsesources) {
+        source.apply_condition(phi_curr);
+    }
+    for (auto source : harmonicsources) {
+        source.apply_condition(phi_curr);
+    }
+}
 
 //---------------------------------------------------------------------
 // Wall_methods
@@ -219,30 +244,58 @@ void  AbsorbingWall<N> ::  apply_condition (Grid<N>& phi_curr, Grid<N>& phi_prev
 
 template<int N>
 AbsorbingWall<N> :: AbsorbingWall(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical, int orientation) :
-                                    Wall<N> (wall_coordinate, start_coordinate, end_coordinate, vertical), orientation(orientation) {}
+    Wall<N> (wall_coordinate, start_coordinate, end_coordinate, vertical), orientation(orientation) {}
+
 
 
 //---------------------------------------------------------------------
-//  Source methods
+// Source methods
+template<int N>
+Source<N> :: Source(int x, int y) : x(x), y(y) {}
 
 template<int N>
-void Source<N> :: update(Scalar_Field<N>& scalar) {
+void Source<N> :: apply_condition (Grid<N>& grid) {}
+
+
+//---------------------------------------------------------------------
+// Impulse_Source methods
+
+template<int N>
+void Impulse_Source<N> :: disturb(Grid<N>& grid) {
+    grid.create_disturbance(Source<N>::x, Source<N>::y, 5, 5, amplitude);
+}
+
+template<int N>
+void Impulse_Source<N> :: apply_condition(Grid<N>& grid) {
     counter++;
     if (counter >= period) {
-        disturb(scalar);
+        disturb(grid);
         counter = 0;
     }
 }
 
 template<int N>
-void Source<N> :: disturb(Scalar_Field<N>& scalar) {
-    scalar.create_disturbance(x, y, 5, 5, 1);
+Impulse_Source<N> ::  Impulse_Source  (int x, int y, int period) : Source<N>::Source(x, y), period(period), amplitude(10) {}
+
+template<int N>
+Impulse_Source<N> ::  Impulse_Source  (int x, int y, int period, double amplitude) : Source<N>::Source(x, y), period(period), amplitude(amplitude) {}
+
+
+//---------------------------------------------------------------------
+// Harmonic_Source methods
+
+template<int N>
+void Harmonic_Source<N> :: apply_condition(Grid<N>& grid) {
+    // setting disturbance
+    double harmonic_value = amplitude * std::sin(phase);
+    grid.create_disturbance(Source<N>::x, Source<N>::y, 5, 5, harmonic_value);
+
+    // incrementing phase
+    phase += 2 * M_PI / period;
 }
 
 template<int N>
-Source<N> ::  Source  (int x, int y, int period) : x(x), y(y), period(period) {}
-
-
-
+Harmonic_Source<N> :: Harmonic_Source(int x, int y, double period, double amplitude, double phase) : 
+    Source<N>::Source(x, y), period(period), amplitude(amplitude), phase(phase) {}
 
 #endif

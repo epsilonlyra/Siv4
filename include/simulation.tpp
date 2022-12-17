@@ -41,11 +41,11 @@ SimulationManager<size> :: SimulationManager() {
             absorbingwalls.emplace_back(0, 0, 300, false, -1);
             absorbingwalls.emplace_back(size - 1, 0, 300, false, 1);
 
-            test_source = Source<size>(150, 150, 15);
-
             add_super_absorber(100, 0, 150, true);
             add_reflecting_wall(100, 170, size, true);
             add_reflecting_wall(100, 150, 170, false);
+            add_impulse_oscillator(150, 150, 15, 1);
+            add_harmonic_oscillator(200, 230, 10, 1, 0);
 }
 
 template<int size>
@@ -72,10 +72,8 @@ template<int size>
 void  SimulationManager<size> :: evolve_my_scalar_field() {
 
     if (!game_state["paused"]) {
-        test_source.update(scalar);
-        scalar.evolve(reflectingwalls, absorbingwalls);
+        scalar.evolve(reflectingwalls, absorbingwalls, impulsesources, harmonicsources);
     }
-
 }
 
 template <int size>
@@ -88,6 +86,15 @@ void SimulationManager<size> :: add_reflecting_wall(int wall_coordinate, int sta
     reflectingwalls.emplace_back(wall_coordinate, start_coordinate, end_coordinate, vertical);
 }
 
+template<int size>
+void SimulationManager<size> :: add_harmonic_oscillator(int x, int y, double period, double amplitude, double phase) {
+    harmonicsources.emplace_back(Harmonic_Source<size>(x, y, period, amplitude, phase));
+}
+
+template<int size>
+void SimulationManager<size> :: add_impulse_oscillator(int x, int y, int period, double amplitude) {
+    impulsesources.emplace_back(Impulse_Source<size>(x, y, period, amplitude));
+}
 
 template<int size>
 void  SimulationManager<size> :: add_super_absorber(int wall_coordinate, int start_coordinate, int end_coordinate, bool vertical) {

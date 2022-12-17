@@ -28,6 +28,8 @@ namespace fc  {
             void change_val(int x, int y, double new_value);
                 // changes value at xy, if x,y are in boundaries; throws an error otherwise
 
+            void create_disturbance (int x, int y, int width, int length,  double amplitude);
+
             void clear();
 
 
@@ -84,7 +86,51 @@ namespace fc  {
 
         private:
            int orientation = 1;
-};
+    };
+
+
+    template<int N>
+    class Source {
+        // abstract source class
+        // x, y -- coordinates of the source
+        protected:
+            int x;
+            int y;
+
+        public:
+            void virtual apply_condition (Grid<N>& grid);
+            Source(int x, int y);
+    };
+
+
+    template<int N>
+    class Impulse_Source final :  public Source<N> {
+        // source that creates a disturbance once in a period*dt
+        private:
+            void disturb(Grid<N>& grid);
+            int period;
+            int counter = 0;
+            int amplitude;
+        
+        public:
+            Impulse_Source(int x, int y, int period);
+            Impulse_Source(int x, int y, int period, double amplitude);
+            void apply_condition (Grid<N>& grid) override;
+    };
+
+    template<int N>
+    class Harmonic_Source final :  public Source<N> {
+        // source that sets disturbance at a given point equal to a harmonic law
+        private:
+            double period;
+            double amplitude;
+            double phase;
+
+        public:
+        Harmonic_Source(int x, int y, double period, double amplitude, double phase);
+        void apply_condition (Grid<N>& grid) override;
+    };
+
 
     template <int N>
     class Scalar_Field final  {
@@ -96,8 +142,8 @@ namespace fc  {
 
 
         public:
-            double const dt = 0.7;
-            double const dx = 1;
+            double const dt = 0.7;  // very magic number
+            double const dx = 1;    // meaningless number
 
             double phi(int x, int y) const;
 
@@ -109,32 +155,12 @@ namespace fc  {
 
             void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
-            void evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls);
+            void evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls, std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources);
 
             void apply_boundaries(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls);
+
+            void apply_condition(std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources);
     };
-
-
-
-
-template<int N>
-
-class Source {
-    public :
-
-        void update(Scalar_Field<N>&  scalar);
-
-        void disturb(Scalar_Field<N>& scalar);
-
-        Source(int x, int y, int period);
-
-    private :
-        int period;
-        int counter = 0;
-        int x;
-        int y;
-};
-
 }
 
 #include "field_class.tpp"
