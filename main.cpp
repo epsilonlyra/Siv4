@@ -45,11 +45,10 @@ void analyze_string(SimulationManager<size>& manager, std::string init_str) {
 
 template<int size>
 void analyze_input(SimulationManager<size>& manager) {
-    std::ifstream file("../configurations/config.txt");
+    std::ifstream file("configurations/config.txt");
     while (true) {
         std::string temp;
         std::getline(file, temp);
-        std::cout << "line: " << temp << std::endl;
         if (temp == "") break;
         analyze_string(manager, temp);
     }
