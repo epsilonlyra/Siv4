@@ -1,0 +1,4 @@
+reflection_wall 45 55 245 vertical
+reflection_wall 255 55 245 vertical
+reflection_wall 45 55 245 horizontal
+reflection_wall 255 55 245 horizontal

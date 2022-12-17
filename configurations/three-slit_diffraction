@@ -1,6 +1,0 @@
-
-        manager.add_super_absorber(130, 0, 90, true);
-        manager.add_super_absorber(130, 100, 145, true);
-        manager.add_super_absorber(130, 155, 200, true);
-        manager.add_super_absorber(130, 210, 300, true);
-        manager.add_harmonic_oscillator(50, 150, 20, 4, 0);

@@ -1,0 +1,4 @@
+absorbtion_wall 130 0 120 vertical
+absorbtion_wall 130 130 170 vertical
+absorbtion_wall 130 180 300 vertical
+harmonic_source 50 150 20 4 0
