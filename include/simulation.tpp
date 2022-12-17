@@ -40,12 +40,6 @@ SimulationManager<size> :: SimulationManager() {
             absorbingwalls.emplace_back(size - 1, 0, 300, true, -1);
             absorbingwalls.emplace_back(0, 0, 300, false, -1);
             absorbingwalls.emplace_back(size - 1, 0, 300, false, 1);
-
-            add_super_absorber(100, 0, 150, true);
-            add_reflecting_wall(100, 170, size, true);
-            add_reflecting_wall(100, 150, 170, false);
-            add_impulse_oscillator(150, 150, 15, 1);
-            add_harmonic_oscillator(200, 230, 10, 1, 0);
 }
 
 template<int size>

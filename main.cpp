@@ -27,7 +27,19 @@ int main() {
 
     sim :: FPSdrawer fps_drawer(manager.get_size() / 15, 0, 0, font);
 
-    //manager.disturb_my_scalar_field((manager.get_size()) / 2 , (manager.get_size()) / 2,  1, 100, 1);
+    // Space for configuration
+    {
+        manager.add_reflecting_wall(45, 55, 245, true);
+        manager.add_reflecting_wall(255, 55, 245, true);
+        manager.add_reflecting_wall(45, 55, 245, false);
+        manager.add_reflecting_wall(255, 55, 245, false);
+        // manager.add_reflecting_wall(x, y_begin, y_end, true); -- vertical reflecting wall
+        // manager.add_reflecting_wall(y, x_begin, x_end, true); -- horizontal reflecting wall
+        // manager.add_super_absorber(x, y_begin, y_end, true); -- vertical absorbing wall
+        // manager.add_super_absorber(y, x_begin, x_end, false); -- horizontal absorbing wall
+        // manager.add_impulse_oscillator(x, y, period, ampl);
+        // manager.add_harmonic_oscillator(x, y, period, ampl, phase);
+    }
 
     sf::RenderWindow window(sf::VideoMode(manager.get_size(), manager.get_size()), "SIV4");
     window.setFramerateLimit(manager.FPS);

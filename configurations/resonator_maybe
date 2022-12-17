@@ -1,0 +1,5 @@
+
+        manager.add_reflecting_wall(45, 55, 245, true);
+        manager.add_reflecting_wall(255, 55, 245, true);
+        manager.add_reflecting_wall(45, 55, 245, false);
+        manager.add_reflecting_wall(255, 55, 245, false);
