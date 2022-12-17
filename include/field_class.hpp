@@ -155,11 +155,11 @@ namespace fc  {
 
             void create_disturbance (int x, int y, int width, int lenght,  int amplitude);
 
-            void evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls, std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources);
+            void evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls, std :: vector<Impulse_Source<N>>& impulsesources, std :: vector<Harmonic_Source<N>>& harmonicsources);
 
             void apply_boundaries(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls);
 
-            void apply_condition(std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources);
+            void apply_condition(std :: vector<Impulse_Source<N>>& impulsesources, std :: vector<Harmonic_Source<N>>& harmonicsources);
     };
 }
 

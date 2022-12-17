@@ -127,7 +127,7 @@ void Scalar_Field<N> :: get_lapl() {
 }
 
 template<int N>
-void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls, std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources) {
+void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls, std :: vector<AbsorbingWall<N>> absorbingwalls, std :: vector<Impulse_Source<N>>& impulsesources, std :: vector<Harmonic_Source<N>>& harmonicsources) {
     get_lapl();
 
     temp.clear();
@@ -140,7 +140,7 @@ void  Scalar_Field<N> :: evolve(std :: vector<ReflectingWall<N>> reflectingwalls
     phi_prev.clear();
     phi_prev += temp;
     apply_boundaries(reflectingwalls, absorbingwalls);
-    apply_condition(impulsesources, harmonicsources);
+    // apply_condition(impulsesources, harmonicsources);
 }
 
 template<int N>
@@ -168,12 +168,12 @@ void  Scalar_Field<N> :: apply_boundaries(std :: vector<ReflectingWall<N>> rwall
 }
 
 template<int N>
-void  Scalar_Field<N> :: apply_condition(std :: vector<Impulse_Source<N>> impulsesources, std :: vector<Harmonic_Source<N>> harmonicsources) {
-    for (auto source : impulsesources) {
-        source.apply_condition(phi_curr);
+void  Scalar_Field<N> :: apply_condition(std :: vector<Impulse_Source<N>>& impulsesources, std :: vector<Harmonic_Source<N>>& harmonicsources) {
+    for (int i = 0; i < impulsesources.size(); i++) {
+        impulsesources[i].apply_condition(phi_curr);
     }
-    for (auto source : harmonicsources) {
-        source.apply_condition(phi_curr);
+    for (int i = 0; i < harmonicsources.size(); i++) {
+        harmonicsources[i].apply_condition(phi_curr);
     }
 }
 
@@ -268,6 +268,7 @@ void Impulse_Source<N> :: disturb(Grid<N>& grid) {
 template<int N>
 void Impulse_Source<N> :: apply_condition(Grid<N>& grid) {
     counter++;
+    std::cout << counter;
     if (counter >= period) {
         disturb(grid);
         counter = 0;

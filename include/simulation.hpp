@@ -38,6 +38,8 @@ class SimulationManager final  {
 
         void pause();
 
+        void switch_sources();
+
         void draw_my_scalar_field(sf :: RenderWindow& window);
 
         void evolve_my_scalar_field();
@@ -54,7 +56,7 @@ class SimulationManager final  {
 
     private:
 
-        std :: map<std :: string, bool> game_state {{"paused", false}};
+        std :: map<std :: string, bool> game_state {{"paused", false}, {"sources_work", true}};
 
         fc :: Scalar_Field<size> scalar;
 

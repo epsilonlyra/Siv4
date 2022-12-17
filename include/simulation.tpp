@@ -54,6 +54,11 @@ void SimulationManager<size> ::  pause() {
 }
 
 template<int size>
+void SimulationManager<size> :: switch_sources() {
+            game_state["sources_work"] = !game_state["sources_work"];
+}
+
+template<int size>
 void  SimulationManager<size> :: draw_my_scalar_field(sf :: RenderWindow& window) {
             update_Image(scalar, image);
             texture.update(image);
@@ -73,6 +78,9 @@ void  SimulationManager<size> :: evolve_my_scalar_field() {
 
     if (!game_state["paused"]) {
         scalar.evolve(reflectingwalls, absorbingwalls, impulsesources, harmonicsources);
+        if (game_state["sources_work"]) {
+            scalar.apply_condition(impulsesources, harmonicsources);
+        }
     }
 }
 

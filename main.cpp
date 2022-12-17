@@ -52,6 +52,10 @@ int main() {
                 if (event.key.code == sf::Keyboard:: Space) {
                     manager.pause();
                 }
+
+                if (event.key.code == sf::Keyboard::S) {
+                    manager.switch_sources();
+                }
             }
 
 
